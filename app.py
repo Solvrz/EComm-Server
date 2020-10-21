@@ -40,15 +40,13 @@ def order_confirmation():
     return "Successful"
 
 
-@app.route("/order_request")
+@app.route("/order_request", methods=["POST"])
 def order_request():
-    args = request.json
-
     message = EmailMessage()
 
     message["From"] = "orders.suneelprinters@gmail.com"
     message["To"] = "orders.suneelprinters@gmail.com"
-    message["Subject"] = f"Order Placed by {args['customer']}"
+    message["Subject"] = f"Order Placed by {request.form['customer']}"
 
     message.set_content(
         f"""<!DOCTYPE html>
@@ -115,15 +113,15 @@ def order_request():
             <table>
                 <tr>
                     <th class="lefty">Customer Name:</th>
-                    <td class="righty">{args['name']}</td>
+                    <td class="righty">{request.form['name']}</td>
                 </tr>
                 <tr>
                     <th class="lefty">Phone Number:</th>
-                    <td class="righty">{args['phone']}</td>
+                    <td class="righty">{request.form['phone']}</td>
                 </tr>
                 <tr>
                     <th class="lefty">Shipping Address:</th>
-                    <td class="righty" width="50%">{args['address']}</td>
+                    <td class="righty" width="50%">{request.form['address']}</td>
                 </tr>
             </table>
             <table class="product">
@@ -132,10 +130,10 @@ def order_request():
                     <th class="righty">QUANTITY</th>
                     <th class="righty" width="40%">PRICE</th>
                 </tr>
-                    {args['product_list']}
+                    {request.form['product_list']}
                 <tr>
                 <th colspan="2" style="border-top: 1px solid black; text-align: left;">TOTAL:</th>
-                <th style="border-top: 1px solid black" class="righty">{args['price']}</th>
+                <th style="border-top: 1px solid black" class="righty">{request.form['price']}</th>
                 </tr>
             </table>
         </div>
