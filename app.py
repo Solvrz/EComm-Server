@@ -4,6 +4,8 @@ import os
 import flask
 from flask import Flask, request
 from flask_cors import CORS
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 
 app = Flask(__name__)
 CORS(app)
@@ -12,6 +14,7 @@ CORS(app)
 @app.route("/")
 def test_server():
     return "I Am Working!!!"
+
 
 @app.route("/order_confirmation")
 def order_confirmation():
@@ -49,7 +52,8 @@ def order_request():
     message["To"] = "orders.suneelprinters@gmail.com"
     message["Subject"] = f"Order Placed by {args['customer']}"
 
-    message.set_content(
+    message.add_header("Content-Type", "text/html")
+    message.set_payload(
         f"""<!DOCTYPE html>
         <html>
         <head>
