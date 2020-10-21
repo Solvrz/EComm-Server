@@ -29,7 +29,7 @@ def order_confirmation():
 
     message.set_content(
         f"Dear {args['customer']}\nGreetings from Sunil Printers!\n\nThis is to confirm that your order for a {args['productName']} costing Rs. {args['price']} is placed."
-        "It would be shortly delivered to the following address\n\n {args['address']}\n\n Thanks for Shopping with us!"
+        f"It would be shortly delivered to the following address\n\n {args['address']}\n\n Thanks for Shopping with us!"
     )
 
     mail_server = smtplib.SMTP_SSL("smtp.gmail.com")
