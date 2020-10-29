@@ -10,15 +10,11 @@ from email.mime.text import MIMEText
 app = Flask(__name__)
 CORS(app)
 
-
 @app.route("/")
 def test_server():
     return "I Am Working!!!"
 
-
-@app.route('/order_confirmation', methods=['POST'])
-def order_confirmation():
-    args = request.get_json()
+def order_confirmation(args):
     message = EmailMessage()
     sender = 'orders.suneelprinters@gmail.com'
     recipient = args['email']
@@ -123,11 +119,9 @@ def order_confirmation():
             </table>
                 <p style = 'font-size:12px; text-align : left;'>Your order will be soon delivered. </p>
                         <p style = 'font-size:18px; text-align : center;'> Thanks for Shopping with us!</p>
-
         </div>
-
         <a href="http://www.facebook.com/" target="_blank">
-                <img src="https://simplesharebuttons.com/images/somacro/facebook.png" alt="Facebook" width="4%" class="center" />
+                <img src="https://simplesharebuttons.com/images/somacro/facebook.png" alt="Facebook" width="5%" class="center" />
             </a>
         </body>
         </html>"""
@@ -139,7 +133,6 @@ def order_confirmation():
     mail_server.quit()
 
     return "Successful"
-
 
 @app.route("/order_request", methods=["POST"])
 def order_request():
@@ -242,7 +235,7 @@ def order_request():
             </table>
         </div>
         <a href="http://www.facebook.com/" target="_blank">
-                <img src="https://simplesharebuttons.com/images/somacro/facebook.png" alt="Facebook" width="4%" class="center" />
+                <img src="https://simplesharebuttons.com/images/somacro/facebook.png" alt="Facebook" width="5%" class="center" />
             </a>
         </body>
         </html>"""
@@ -253,9 +246,9 @@ def order_request():
     mail_server.send_message(message)
     mail_server.quit()
 
-    return "Successful"
+    order_confirmation(args)
 
+    return "Successful"
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
-
