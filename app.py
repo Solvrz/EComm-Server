@@ -4,8 +4,8 @@ import smtplib
 from email.message import EmailMessage
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+from paytmchecksum import Paytmchecksum
 import flask
-import PaytmChecksum
 import requests
 from flask import Flask, request
 from flask_cors import CORS
@@ -19,9 +19,9 @@ def test_server():
     return "I Am Working!!!"
 
 
-@app.route("/payment", methods=["POST"])
+@app.route("/payment")
 def process_payment():
-    args = request.get_json()
+    args = request.args
 
     paytmParams = dict()
 
@@ -35,7 +35,7 @@ def process_payment():
         "userInfo": {"custId": f"{args['cust']}",},
     }
     paytmParams["head"] = {
-        "signature": PaytmChecksum.generateSignature(
+        "signature": Paytmchecksum.generateSignature(
             json.dumps(paytmParams["body"]), "lFJs&StYc8SxR1pj"
         )
     }
@@ -56,13 +56,11 @@ def process_payment():
 
 def order_confirmation(args):
     message = EmailMessage()
-    sender = "orders.suneelprinters@gmail.com"
-    recipient = args["email"]
 
-    message["From"] = sender
-    message["To"] = recipient
-
+    message["From"] = "orders.suneelprinters@gmail.com"
+    message["To"] = args["email"]
     message["Subject"] = "Order Confirmation from Sunil Printers"
+
     message.add_header("Content-Type", "text/html")
     message.set_payload(
         f"""<!DOCTYPE html>
@@ -137,12 +135,12 @@ def order_confirmation(args):
                     <td class="righty">{args['phone']}</td>
                 </tr>
                 <tr>
-                    <th class="lefty">Shipping Address:</th>
-                    <td class="righty" width="50%">{args['address']}</td>
-                </tr>
-                <tr>
                     <th class="lefty">Payment Mode:</th>
                     <td class="righty">{args['payment_mode']}</td>
+                </tr>
+                <tr>
+                    <th class="lefty">Shipping Address:</th>
+                    <td class="righty" width="50%">{args['address']}</td>
                 </tr>
             </table>
             <table class="product">
@@ -157,7 +155,7 @@ def order_confirmation(args):
                 <th style="border-top: 1px solid black" class="righty">{args['price']}</th>
                 </tr>
             </table>
-                <p style = 'font-size:12px; text-align : left;'>Your order will be soon delivered. </p>
+                <p style = 'font-size:12px; text-align : center;'>Your order will be delivered soon. </p>
                         <p style = 'font-size:18px; text-align : center;'> Thanks for Shopping with us!</p>
         </div>
         <a href="http://www.facebook.com/" target="_blank">
@@ -183,7 +181,7 @@ def order_request():
 
     message["From"] = "orders.suneelprinters@gmail.com"
     message["To"] = "orders.suneelprinters@gmail.com"
-    message["Subject"] = f"Order Placed by {args['customer']}"
+    message["Subject"] = f"Order Placed by {args['name']}"
 
     message.add_header("Content-Type", "text/html")
     message.set_payload(
@@ -258,6 +256,10 @@ def order_request():
                     <td class="righty">{args['phone']}</td>
                 </tr>
                 <tr>
+                    <th class="lefty">Payment Mode:</th>
+                    <td class="righty">{args['payment_mode']}</td>
+                </tr>
+                <tr>
                     <th class="lefty">Shipping Address:</th>
                     <td class="righty" width="50%">{args['address']}</td>
                 </tr>
@@ -293,4 +295,5 @@ def order_request():
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
+    app.run(debug=True)
+    # app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
