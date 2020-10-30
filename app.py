@@ -1,15 +1,15 @@
-# import json
+import json
 import os
 import smtplib
 from email.message import EmailMessage
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
-# from paytmchecksum import Paytmchecksum
 import flask
 import requests
 from flask import Flask, request
 from flask_cors import CORS
+from paytmchecksum import Paytmchecksum
 
 app = Flask(__name__)
 CORS(app)
@@ -20,39 +20,39 @@ def test_server():
     return "I Am Working!!!"
 
 
-# @app.route("/payment")
-# def process_payment():
-#     args = request.args
+@app.route("/payment")
+def process_payment():
+    args = request.args
 
-#     paytmParams = dict()
+    paytmParams = dict()
 
-#     paytmParams["body"] = {
-#         "requestType": "Payment",
-#         "mid": "MoShyC80984595390154",
-#         "websiteName": "WEBSTAGING",
-#         "orderId": f"{args['id']}",
-#         "callbackUrl": "https://securegw-stage.paytm.in/order/process",
-#         "txnAmount": {"value": f"{args['value']}", "currency": "INR",},
-#         "userInfo": {"custId": f"{args['cust']}",},
-#     }
-#     paytmParams["head"] = {
-#         "signature": Paytmchecksum.generateSignature(
-#             json.dumps(paytmParams["body"]), "lFJs&StYc8SxR1pj"
-#         )
-#     }
+    paytmParams["body"] = {
+        "requestType": "Payment",
+        "mid": "MoShyC80984595390154",
+        "websiteName": "WEBSTAGING",
+        "orderId": f"{args['id']}",
+        "callbackUrl": "https://securegw-stage.paytm.in/order/process",
+        "txnAmount": {"value": f"{args['value']}", "currency": "INR",},
+        "userInfo": {"custId": f"{args['cust']}",},
+    }
+    paytmParams["head"] = {
+        "signature": Paytmchecksum.generateSignature(
+            json.dumps(paytmParams["body"]), "lFJs&StYc8SxR1pj"
+        )
+    }
 
-#     post_data = json.dumps(paytmParams)
+    post_data = json.dumps(paytmParams)
 
-#     if args["staging"] == "true":
-#         url = f"https://securegw-stage.paytm.in/theia/api/v1/initiateTransaction?mid=MoShyC80984595390154&orderId={args['id']}"
-#     else:
-#         url = f"https://securegw.paytm.in/theia/api/v1/initiateTransaction?mid=MoShyC80984595390154&orderId={args['id']}"
+    if args["staging"] == "true":
+        url = f"https://securegw-stage.paytm.in/theia/api/v1/initiateTransaction?mid=MoShyC80984595390154&orderId={args['id']}"
+    else:
+        url = f"https://securegw.paytm.in/theia/api/v1/initiateTransaction?mid=MoShyC80984595390154&orderId={args['id']}"
 
-#     response = requests.post(
-#         url, data=post_data, headers={"Content-type": "application/json"}
-#     ).json()
+    response = requests.post(
+        url, data=post_data, headers={"Content-type": "application/json"}
+    ).json()
 
-#     return response
+    return response
 
 
 @app.route("/order_request", methods=["POST"])
