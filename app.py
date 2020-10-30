@@ -21,9 +21,9 @@ def test_server():
     return "I Am Working!!!"
 
 
-@app.route("/payment")
+@app.route("/payment", methods=["POST"])
 def process_payment():
-    args = request.args
+    args = request.get_json()
 
     paytmParams = dict()
 
@@ -178,5 +178,4 @@ def order_request():
 
 
 if __name__ == "__main__":
-    # app.run(debug=True)
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
