@@ -1,28 +1,68 @@
-from email.message import EmailMessage
-import smtplib
+import json
 import os
-import flask
-from flask import Flask, request
-from flask_cors import CORS
+import smtplib
+from email.message import EmailMessage
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+import flask
+import PaytmChecksum
+import requests
+from flask import Flask, request
+from flask_cors import CORS
 
 app = Flask(__name__)
 CORS(app)
+
 
 @app.route("/")
 def test_server():
     return "I Am Working!!!"
 
+
+@app.route("/payment", methods=["POST"])
+def process_payment():
+    args = request.get_json()
+
+    paytmParams = dict()
+
+    paytmParams["body"] = {
+        "requestType": "Payment",
+        "mid": "MoShyC80984595390154",
+        "websiteName": "WEBSTAGING",
+        "orderId": f"{args['id']}",
+        "callbackUrl": "https://securegw-stage.paytm.in/order/process",
+        "txnAmount": {"value": f"{args['value']}", "currency": "INR",},
+        "userInfo": {"custId": f"{args['cust']}",},
+    }
+    paytmParams["head"] = {
+        "signature": PaytmChecksum.generateSignature(
+            json.dumps(paytmParams["body"]), "lFJs&StYc8SxR1pj"
+        )
+    }
+
+    post_data = json.dumps(paytmParams)
+
+    if args["staging"] == "true":
+        url = f"https://securegw-stage.paytm.in/theia/api/v1/initiateTransaction?mid=MoShyC80984595390154&orderId={args['id']}"
+    else:
+        url = f"https://securegw.paytm.in/theia/api/v1/initiateTransaction?mid=MoShyC80984595390154&orderId={args['id']}"
+
+    response = requests.post(
+        url, data=post_data, headers={"Content-type": "application/json"}
+    ).json()
+
+    return response
+
+
 def order_confirmation(args):
     message = EmailMessage()
-    sender = 'orders.suneelprinters@gmail.com'
-    recipient = args['email']
+    sender = "orders.suneelprinters@gmail.com"
+    recipient = args["email"]
 
-    message['From'] = sender
-    message['To'] = recipient
+    message["From"] = sender
+    message["To"] = recipient
 
-    message['Subject'] = 'Order Confirmation from Sunil Printers'
+    message["Subject"] = "Order Confirmation from Sunil Printers"
     message.add_header("Content-Type", "text/html")
     message.set_payload(
         f"""<!DOCTYPE html>
@@ -133,6 +173,7 @@ def order_confirmation(args):
     mail_server.quit()
 
     return "Successful"
+
 
 @app.route("/order_request", methods=["POST"])
 def order_request():
@@ -249,6 +290,7 @@ def order_request():
     order_confirmation(args)
 
     return "Successful"
+
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
