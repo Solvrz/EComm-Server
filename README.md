@@ -1,1 +1,1 @@
-# SuneelPrinters-Mail-Server
+# SuneelPrinters-Server
