@@ -9,7 +9,8 @@ import flask
 import requests
 from flask import Flask, request
 from flask_cors import CORS
-from paytmchecksum import Paytmchecksum
+
+from checksum import generateSignature
 
 app = Flask(__name__)
 CORS(app)
@@ -35,11 +36,9 @@ def process_payment():
         "txnAmount": {"value": f"{args['value']}", "currency": "INR",},
         "userInfo": {"custId": f"{args['cust']}",},
     }
-    paytmParams["head"] = {
-        "signature": Paytmchecksum.generateSignature(
-            json.dumps(paytmParams["body"]), "lFJs&StYc8SxR1pj"
-        )
-    }
+
+    signature = generateSignature(json.dumps(paytmParams["body"]), "lFJs&StYc8SxR1pj")
+    paytmParams["head"] = {"signature": signature}
 
     post_data = json.dumps(paytmParams)
 
