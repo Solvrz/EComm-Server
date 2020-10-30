@@ -6,10 +6,10 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
 import flask
+import Paytmchecksum
 import requests
 from flask import Flask, request
 from flask_cors import CORS
-from paytmchecksum import Paytmchecksum
 
 app = Flask(__name__)
 CORS(app)
