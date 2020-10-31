@@ -1,4 +1,5 @@
-import json, os, smtplib, datetime, requests
+import json, os, smtplib, requests
+from datetime import datetime
 from email.message import EmailMessage
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
@@ -21,7 +22,7 @@ def test_server():
 def process_payment():
     args = request.get_json()
 
-    orderId = f"ORDER_{args['phone']}{datetime.datetime.now().total_seconds()}"
+    orderId = f"ORDER_{args['phone']}{datetime.timestamp(datetime.now())}"
 
     params = dict()
 
