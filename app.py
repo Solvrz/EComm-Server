@@ -173,9 +173,9 @@ def order_request():
 
     return "Successful"
     
-@app.route("/onOrder")
-def onOrder():
-    args = request.args
+@app.route("/on_order")
+def on_order():
+    args = request.get_json()
 
     message = EmailMessage()
 
