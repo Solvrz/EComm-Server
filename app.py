@@ -258,11 +258,10 @@ def on_order():
                     <th class="lefty">Phone Number:</th>
                     <td class="righty">{args['phone']}</td>
                 </tr>
-               
             </table>
-          <p style = font-size:18px; font-weight:bold;>ORDERS:</p>
-          <ol><li>{args['order_list']}</ol>
-                <p style = 'font-size:12px; text-align : center;'>You will soon recieve a call from Suneel Printers </p>
+            <p style = font-size:18px; font-weight:bold;>ORDERS:</p>
+            <ul><li>{args['order_list']}</li></ul>
+                <p style = 'font-size:12px; text-align : center;'>You will soon recieve a call from us</p>
                         <p style = 'font-size:18px; text-align : center;'> Thanks for Shopping with us!</p>
         </div>
         <a href="http://www.facebook.com/" target="_blank">
