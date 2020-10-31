@@ -1,12 +1,8 @@
-import json
-import os
-import smtplib
+import json, os, smtplib, datetime, requests
 from email.message import EmailMessage
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
-import flask
-import requests
 from flask import Flask, request
 from flask_cors import CORS
 
@@ -25,34 +21,35 @@ def test_server():
 def process_payment():
     args = request.get_json()
 
-    paytmParams = dict()
+    orderId = f"ORDER_{args['phone']}{datetime.datetime.now().total_seconds()}"
 
-    paytmParams["body"] = {
+    params = dict()
+
+    params["body"] = {
         "requestType": "Payment",
         "mid": "MoShyC80984595390154",
         "websiteName": "WEBSTAGING",
-        "orderId": f"{args['id']}",
+        "orderId": orderId,
         "callbackUrl": "https://securegw-stage.paytm.in/order/process",
         "txnAmount": {"value": f"{args['value']}", "currency": "INR",},
         "userInfo": {"custId": f"{args['cust']}",},
     }
 
-    signature = generateSignature(json.dumps(paytmParams["body"]), "lFJs&StYc8SxR1pj")
-    paytmParams["head"] = {"signature": signature}
-
-    post_data = json.dumps(paytmParams)
+    signature = generateSignature(json.dumps(params["body"]), "lFJs&StYc8SxR1pj")
+    params["head"] = {"signature": signature}
 
     if args["staging"] == "true":
-        url = f"https://securegw-stage.paytm.in/theia/api/v1/initiateTransaction?mid=MoShyC80984595390154&orderId={args['id']}"
+        url = f"https://securegw-stage.paytm.in/theia/api/v1/initiateTransaction?mid=MoShyC80984595390154&orderId={orderId}"
     else:
-        url = f"https://securegw.paytm.in/theia/api/v1/initiateTransaction?mid=MoShyC80984595390154&orderId={args['id']}"
+        url = f"https://securegw.paytm.in/theia/api/v1/initiateTransaction?mid=MoShyC80984595390154&orderId={orderId}"
 
     response = requests.post(
-        url, data=post_data, headers={"Content-type": "application/json"}
+        url, data=json.dumps(params), headers={"Content-type": "application/json"}
     ).json()
 
-    return response
+    response["orderId"] = orderId
 
+    return response
 
 @app.route("/order_request", methods=["POST"])
 def order_request():
