@@ -50,8 +50,7 @@ def process_payment():
 
     response["orderId"] = orderId
     
-    if orderId == "":
-        print("Iam so sorry i sent null");
+    print(orderId);
 
     return response
 
