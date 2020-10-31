@@ -49,6 +49,9 @@ def process_payment():
     ).json()
 
     response["orderId"] = orderId
+    
+    if orderId == "":
+        print("Iam so sorry i sent null");
 
     return response
 
