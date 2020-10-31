@@ -47,10 +47,7 @@ def process_payment():
     response = requests.post(
         url, data=json.dumps(params), headers={"Content-type": "application/json"}
     ).json()
-
     response["orderId"] = orderId
-    
-    print(orderId);
 
     return response
 
