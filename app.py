@@ -51,6 +51,7 @@ def process_payment():
 
     return response
 
+
 @app.route("/order_request", methods=["POST"])
 def order_request():
     args = request.get_json()
@@ -172,8 +173,9 @@ def order_request():
     mail_server.quit()
 
     return "Successful"
-    
-@app.route("/on_order")
+
+
+@app.route("/on_order", methods=["POST"])
 def on_order():
     args = request.get_json()
 
@@ -275,10 +277,7 @@ def on_order():
     mail_server.login("orders.suneelprinters@gmail.com", "SuneelPrinters37")
     mail_server.send_message(message)
     mail_server.quit()
-    return 'Successful'
-
-
-
+    return "Successful"
 
 
 if __name__ == "__main__":
