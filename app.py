@@ -52,7 +52,6 @@ def payment_init():
         url, data=json.dumps(params), headers={"Content-type": "application/json"}
     ).json()
     response["orderId"] = orderId
-    response["signature"] = signature
 
     return response
 
@@ -61,17 +60,11 @@ def payment_init():
 def payment_status():
     args = request.get_json()
 
-    paytmParams = dict()
+    params = dict()
+    params["body"] = {"mid": "MoShyC80984595390154", "orderId": args["orderId"]}
 
-    paytmParams["body"] = {
-        "mid": "MoShyC80984595390154",
-        "orderId": args["orderId"],
-    }
-    paytmParams["head"] = {
-        "signature": args["signature"],
-    }
-
-    post_data = json.dumps(paytmParams)
+    signature = generateSignature(json.dumps(params["body"]), "lFJs&StYc8SxR1pj")
+    params["head"] = {"signature": signature}
 
     if args["staging"] == "true":
         url = "https://securegw-stage.paytm.in/v3/order/status"
@@ -79,9 +72,9 @@ def payment_status():
         url = "https://securegw.paytm.in/v3/order/status"
 
     response = requests.post(
-        url, data=post_data, headers={"Content-type": "application/json"}
+        url, data=json.dumps(params), headers={"Content-type": "application/json"}
     ).json()
-    
+
     print(response)
 
     return response
