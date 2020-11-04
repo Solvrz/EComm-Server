@@ -1,9 +1,12 @@
-import json, os, smtplib, requests
+import json
+import os
+import smtplib
 from datetime import datetime
 from email.message import EmailMessage
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
+import requests
 from flask import Flask, request
 from flask_cors import CORS
 
@@ -33,7 +36,7 @@ def process_payment():
         "orderId": orderId,
         "callbackUrl": f"https://securegw-stage.paytm.in/theia/paytmCallback?ORDER_ID={orderId}",
         "txnAmount": {"value": f"{args['value']}", "currency": "INR",},
-        "disablePaymentMode": "[{'mode':'EMI'}]",
+        "disablePaymentMode": [{"mode": "EMI", "channels": ["EMI"]}],
         "userInfo": {"custId": f"{args['cust']}",},
     }
 
@@ -51,11 +54,6 @@ def process_payment():
     response["orderId"] = orderId
 
     return response
-
-
-@app.route("/callback", methods=["POST"])
-def process_callback():
-    return request.get_json()
 
 
 @app.route("/order_request", methods=["POST"])
