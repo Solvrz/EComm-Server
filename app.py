@@ -31,7 +31,7 @@ def process_payment():
         "mid": "MoShyC80984595390154",
         "websiteName": "WEBSTAGING",
         "orderId": orderId,
-        "callbackUrl": "https://securegw-stage.paytm.in/order/process",
+        "callbackUrl": f"https://securegw-stage.paytm.in/theia/paytmCallback?ORDER_ID={orderId}",
         "txnAmount": {"value": f"{args['value']}", "currency": "INR",},
         "userInfo": {"custId": f"{args['cust']}",},
     }
@@ -50,6 +50,7 @@ def process_payment():
     response["orderId"] = orderId
 
     return response
+
 
 @app.route("/callback", methods=["POST"])
 def process_callback():
