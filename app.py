@@ -75,13 +75,11 @@ def payment_status():
         url, data=json.dumps(params), headers={"Content-type": "application/json"}
     ).json()
 
-    print(response)
-
     return response
 
 
 @app.route("/order_request", methods=["POST"])
-def order_request():
+def send_product_mail():
     args = request.get_json()
 
     message = EmailMessage()
@@ -204,7 +202,7 @@ def order_request():
 
 
 @app.route("/on_order", methods=["POST"])
-def on_order():
+def send_order_mail():
     args = request.get_json()
 
     message = EmailMessage()
