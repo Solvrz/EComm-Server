@@ -33,6 +33,7 @@ def process_payment():
         "orderId": orderId,
         "callbackUrl": f"https://securegw-stage.paytm.in/theia/paytmCallback?ORDER_ID={orderId}",
         "txnAmount": {"value": f"{args['value']}", "currency": "INR",},
+        "disablePaymentMode": "[{'mode':'EMI'}]",
         "userInfo": {"custId": f"{args['cust']}",},
     }
 
