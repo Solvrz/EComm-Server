@@ -81,6 +81,8 @@ def payment_status():
     response = requests.post(
         url, data=post_data, headers={"Content-type": "application/json"}
     ).json()
+    
+    print(response)
 
     return response
 
