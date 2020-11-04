@@ -51,6 +51,10 @@ def process_payment():
 
     return response
 
+@app.route("/callback", methods=["POST"])
+def process_callback():
+    return request.get_json()
+
 
 @app.route("/order_request", methods=["POST"])
 def order_request():
