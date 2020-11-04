@@ -22,7 +22,7 @@ def test_server():
 
 
 @app.route("/payment", methods=["POST"])
-def process_payment():
+def payment_init():
     args = request.get_json()
 
     orderId = f"ORDER_{args['phone']}{datetime.timestamp(datetime.now())}"
@@ -52,6 +52,35 @@ def process_payment():
         url, data=json.dumps(params), headers={"Content-type": "application/json"}
     ).json()
     response["orderId"] = orderId
+    response["signature"] = signature
+
+    return response
+
+
+@app.route("/status", methods=["POST"])
+def payment_status():
+    args = request.get_json()
+
+    paytmParams = dict()
+
+    paytmParams["body"] = {
+        "mid": "MoShyC80984595390154",
+        "orderId": args["orderId"],
+    }
+    paytmParams["head"] = {
+        "signature": args["signature"],
+    }
+
+    post_data = json.dumps(paytmParams)
+
+    if args["staging"] == "true":
+        url = "https://securegw-stage.paytm.in/v3/order/status"
+    else:
+        url = "https://securegw.paytm.in/v3/order/status"
+
+    response = requests.post(
+        url, data=post_data, headers={"Content-type": "application/json"}
+    ).json()
 
     return response
 
