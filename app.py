@@ -115,7 +115,7 @@ def payment_init():
                     <input type='hidden' name='ORDER_ID' value='{args["orderId"]}' >
                     <input type='hidden' name='EMAIL' value='{args["email"]}' >
                     <input type='hidden' name='TXN_AMOUNT' value='{args["value"]}' >
-                    <input type='hidden' name='CALLBACK_URL' value='https://securegw-stage.paytm.in/theia/paytmCallback?ORDER_ID={args["orderId"]}' >
+                    <input type='hidden' name='CALLBACK_URL' value='https://suneel-printers.herokuapp.com/callback' >
                     <input type='hidden' name='CHECKSUMHASH' value='{signature}' >
                 </form>
                 <script type="text/javascript">document.f.submit();</script>
@@ -146,6 +146,21 @@ def payment_status():
     ).json()
 
     return response
+
+
+@app.route("/callback", methods=["POST"])
+def callback():
+    args = requests.get_json()
+
+    print(args)
+
+    # checksumhash = args["CHECKSUMHASH"]
+    # result = checksum_lib.verifychecksum(responseData, PaytmConfig.key, checksumhash)
+
+    # if result:
+    #     return res.send({status: 0, data: responseData})
+    # else:
+    #     return res.send({status: 1, data: responseData})
 
 
 @app.route("/order_request", methods=["POST"])
