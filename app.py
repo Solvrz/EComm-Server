@@ -98,12 +98,12 @@ def payment_init():
         "<input type='hidden' name='CHECKSUMHASH' value='" + signature + "' >"
     )
 
-    with open("template/checkout.html", "w") as f:
+    with open("templates/checkout.html", "w") as f:
         f.write(
             f"""<html><head><title>Merchant Checkout Page</title></head><body><center><h1>Please do not refresh this page...</h1></center><form method="post" action="'https://securegw-stage.paytm.in/order/process'" name="f1">'{form_fields}'</form><script type="text/javascript">document.f1.submit()</script></body></html>"""
         ),
 
-    with open("template/checkout.html", "r") as f:
+    with open("templates/checkout.html", "r") as f:
         print("File:", f.read())
 
     print("CWD:", getcwd())
