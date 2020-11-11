@@ -100,7 +100,7 @@ def payment_init():
 
     with open("template/checkout.html", "w") as f:
         f.write(
-            """<html><head><title>Merchant Checkout Page</title></head><body><center><h1>Please do not refresh this page...</h1></center><form method="post" action="'https://securegw-stage.paytm.in/order/process'" name="f1">'{form_fields}'</form><script type="text/javascript">document.f1.submit()</script></body></html>"""
+            f"""<html><head><title>Merchant Checkout Page</title></head><body><center><h1>Please do not refresh this page...</h1></center><form method="post" action="'https://securegw-stage.paytm.in/order/process'" name="f1">'{form_fields}'</form><script type="text/javascript">document.f1.submit()</script></body></html>"""
         ),
 
     with open("template/checkout.html", "r") as f:
