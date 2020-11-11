@@ -26,7 +26,7 @@ def test_server():
 def payment_init():
     args = request.form
 
-    print(args)
+    print(args["orderId"])
 
     # params = dict()
 
@@ -107,9 +107,9 @@ def payment_init():
         ),
 
     with open("template/checkout.html", "r") as f:
-        print(f.read())
+        print("File:", f.read())
 
-    print(getcwd())
+    print("CWD:", getcwd())
 
     return render_template("checkout.html", name=None)
 
