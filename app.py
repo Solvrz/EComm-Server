@@ -150,7 +150,7 @@ def payment_status():
 
 @app.route("/callback", methods=["POST"])
 def callback():
-    args = requests.get_json()
+    args = request.get_json()
 
     print(args)
 
