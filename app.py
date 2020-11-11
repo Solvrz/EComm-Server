@@ -20,9 +20,9 @@ CORS(app)
 def test_server():
     return "I Am Working!!!"
 
-@app.route("/payment", methods=["POST"])
+@app.route("/payment", methods=["GET", "POST"])
 def payment_init():
-    args = request.get_json()
+    args = request.form
 
     # params = dict()
 
