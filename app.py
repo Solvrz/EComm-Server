@@ -7,7 +7,7 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
 import requests
-from flask import Flask, request
+from flask import Flask, render_template, request
 from flask_cors import CORS
 
 from checksum import generateSignature
@@ -24,41 +24,9 @@ def test_server():
 def payment_init():
     args = request.get_json()
 
-    params = dict()
+    # params = dict()
 
-    params["body"] = {
-        "requestType": "Payment",
-        "mid": "MoShyC80984595390154",
-        "websiteName": "WEBSTAGING",
-        "orderId": args["orderId"],
-        "callbackUrl": f"https://securegw-stage.paytm.in/theia/paytmCallback?ORDER_ID={args['orderId']}",
-        "txnAmount": {"value": f"{args['value']}", "currency": "INR",},
-        "disablePaymentMode": [{"mode": "EMI", "channels": ["EMI"]}],
-        "userInfo": {"custId": f"{args['email']}",},
-    }
-    
-    signature = generateSignature(
-        json.dumps(params["body"]), "lFJs&StYc8SxR1pj"
-    )
-
-    params["head"] = {"signature": signature}
-
-    if args["staging"] == "true":
-        url = f"https://securegw-stage.paytm.in/theia/api/v1/initiateTransaction?mid=MoShyC80984595390154&orderId={args['orderId']}"
-    else:
-        url = f"https://securegw.paytm.in/theia/api/v1/initiateTransaction?mid=MoShyC80984595390154&orderId={args['orderId']}"
-
-    response = requests.post(
-        url, data=json.dumps(params), headers={"Content-type": "application/json"}
-    ).json()
-    
-    response["signature"] = signature
-
-    return response
-
-    # checksumParams = dict()
-
-    # checksumParams["body"] = {
+    # params["body"] = {
     #     "requestType": "Payment",
     #     "mid": "MoShyC80984595390154",
     #     "websiteName": "WEBSTAGING",
@@ -68,43 +36,71 @@ def payment_init():
     #     "disablePaymentMode": [{"mode": "EMI", "channels": ["EMI"]}],
     #     "userInfo": {"custId": f"{args['email']}",},
     # }
-
-    # signature = generateSignature(
-    #     json.dumps(checksumParams["body"]), "lFJs&StYc8SxR1pj"
-    # )
     
-    # params = dict()
-
-    # params["MID"] = "MoShyC80984595390154"
-    # params["WEBSITE"] = "WEBSTAGING"
-    # params["CHANNEL_ID"] = "WEB"
-    # params["INDUSTRY_TYPE_ID"] = "Retail"
-    # params["ORDER_ID"] = args["orderId"]
-    # params["TXN_AMOUNT"] = args["value"]
-    # params[
-    #     "CALLBACK_URL"
-    # ] = f"https://securegw-stage.paytm.in/theia/paytmCallback?ORDER_ID={args['orderId']}"
-    # params["EMAIL"] = args["email"]
-
-    # form_fields = ""
-
-    # for parm in params:
-    #     form_fields += (
-    #         "<input type='hidden' name='" + parm + "' value='" + params[parm] + "' >"
-    #     )
-
-    # form_fields += (
-    #     "<input type='hidden' name='CHECKSUMHASH' value='" + signature + "' >"
+    # signature = generateSignature(
+    #     json.dumps(params["body"]), "lFJs&StYc8SxR1pj"
     # )
 
-    # response = {
-    #     "status": 200,
-    #     "headers": {"Content-Type": "text/html"},
-    #     "body": f"""<html><head><title>Merchant Checkout Page</title></head><body><center><h1>Please do not refresh this page...</h1></center><form method="post" action="'https://securegw-stage.paytm.in/order/process'" name="f1">'{form_fields}'</form><script type="text/javascript">document.f1.submit()</script></body></html>""",
-    # }
+    # params["head"] = {"signature": signature}
+
+    # if args["staging"] == "true":
+    #     url = f"https://securegw-stage.paytm.in/theia/api/v1/initiateTransaction?mid=MoShyC80984595390154&orderId={args['orderId']}"
+    # else:
+    #     url = f"https://securegw.paytm.in/theia/api/v1/initiateTransaction?mid=MoShyC80984595390154&orderId={args['orderId']}"
+
+    # response = requests.post(
+    #     url, data=json.dumps(params), headers={"Content-type": "application/json"}
+    # ).json()
+    
+    # response["signature"] = signature
 
     # return response
 
+    checksumParams = dict()
+
+    checksumParams["body"] = {
+        "requestType": "Payment",
+        "mid": "MoShyC80984595390154",
+        "websiteName": "WEBSTAGING",
+        "orderId": args["orderId"],
+        "callbackUrl": f"https://securegw-stage.paytm.in/theia/paytmCallback?ORDER_ID={args['orderId']}",
+        "txnAmount": {"value": f"{args['value']}", "currency": "INR",},
+        "disablePaymentMode": [{"mode": "EMI", "channels": ["EMI"]}],
+        "userInfo": {"custId": f"{args['email']}",},
+    }
+
+    signature = generateSignature(
+        json.dumps(checksumParams["body"]), "lFJs&StYc8SxR1pj"
+    )
+    
+    params = dict()
+
+    params["MID"] = "MoShyC80984595390154"
+    params["WEBSITE"] = "WEBSTAGING"
+    params["CHANNEL_ID"] = "WEB"
+    params["INDUSTRY_TYPE_ID"] = "Retail"
+    params["ORDER_ID"] = args["orderId"]
+    params["TXN_AMOUNT"] = args["value"]
+    params[
+        "CALLBACK_URL"
+    ] = f"https://securegw-stage.paytm.in/theia/paytmCallback?ORDER_ID={args['orderId']}"
+    params["EMAIL"] = args["email"]
+
+    form_fields = ""
+
+    for parm in params:
+        form_fields += (
+            "<input type='hidden' name='" + parm + "' value='" + params[parm] + "' >"
+        )
+
+    form_fields += (
+        "<input type='hidden' name='CHECKSUMHASH' value='" + signature + "' >"
+    )
+
+    with open("template/checkout.html", "w")as f:
+        f.write("""<html><head><title>Merchant Checkout Page</title></head><body><center><h1>Please do not refresh this page...</h1></center><form method="post" action="'https://securegw-stage.paytm.in/order/process'" name="f1">'{form_fields}'</form><script type="text/javascript">document.f1.submit()</script></body></html>"""),
+
+    return render_template("checkout.html")
 
 @app.route("/status", methods=["POST"])
 def payment_status():
