@@ -98,16 +98,16 @@ def payment_init():
         "<input type='hidden' name='CHECKSUMHASH' value='" + signature + "' >"
     )
 
-    response = requests.post(
-        "https://securegw-stage.paytm.in/order/process", data=form_fields
-    )
+    # response = requests.post(
+    #     "https://securegw-stage.paytm.in/order/process", data=form_fields
+    # )
 
     with open("templates/checkout.html", "w") as f:
         f.write(
             f"""<html><head><title>Merchant Checkout Page</title></head><body><center><h1>Please do not refresh this page...</h1></center><form method="post" action="https://securegw-stage.paytm.in/order/process" name="f1">'{form_fields}'</form><script type="text/javascript">document.f1.submit()</script></body></html>"""
         ),
 
-    return redirect("https://securegw-stage.paytm.in/order/process"), response
+    return redirect("https://securegw-stage.paytm.in/order/process")
 
 
 @app.route("/status", methods=["POST"])
