@@ -22,9 +22,9 @@ def test_server():
     return "I Am Working!!!"
 
 
-@app.route("/payment")
+@app.route("/payment", methods=["POST"])
 def payment_init():
-    args = request.args
+    args = request.get_json()
 
     params = dict()
 
