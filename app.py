@@ -20,7 +20,7 @@ CORS(app)
 def test_server():
     return "I Am Working!!!"
 
-@app.route("/payment")
+@app.route("/payment", methods=["POST"])
 def payment_init():
     args = request.get_json()
 
