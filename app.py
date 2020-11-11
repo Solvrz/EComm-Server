@@ -77,21 +77,6 @@ def payment_status():
     return response
 
 
-@app.route("/callback", methods=["POST"])
-def callback():
-    args = request.get_json()
-
-    print(args)
-
-    # checksumhash = args["CHECKSUMHASH"]
-    # result = checksum_lib.verifychecksum(responseData, PaytmConfig.key, checksumhash)
-
-    # if result:
-    #     return res.send({status: 0, data: responseData})
-    # else:
-    #     return res.send({status: 1, data: responseData})
-
-
 @app.route("/order_request", methods=["POST"])
 def send_product_mail():
     args = request.get_json()
@@ -321,4 +306,3 @@ def send_order_mail():
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
-    # app.run(debug=True)
