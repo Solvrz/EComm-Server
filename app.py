@@ -1,14 +1,14 @@
 import json
 import os
-from os import getcwd
 import smtplib
 from datetime import datetime
 from email.message import EmailMessage
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+from os import getcwd
 
 import requests
-from flask import Flask, render_template, request
+from flask import Flask, redirect, render_template, request
 from flask_cors import CORS
 
 from checksum import generateSignature
@@ -98,17 +98,16 @@ def payment_init():
         "<input type='hidden' name='CHECKSUMHASH' value='" + signature + "' >"
     )
 
+    response = requests.post(
+        "https://securegw-stage.paytm.in/order/process", data=form_fields
+    )
+
     with open("templates/checkout.html", "w") as f:
         f.write(
-            f"""<html><head><title>Merchant Checkout Page</title></head><body><center><h1>Please do not refresh this page...</h1></center><form method="post" action="'https://securegw-stage.paytm.in/order/process'" name="f1">'{form_fields}'</form><script type="text/javascript">document.f1.submit()</script></body></html>"""
+            f"""<html><head><title>Merchant Checkout Page</title></head><body><center><h1>Please do not refresh this page...</h1></center><form method="post" action="https://securegw-stage.paytm.in/order/process" name="f1">'{form_fields}'</form><script type="text/javascript">document.f1.submit()</script></body></html>"""
         ),
 
-    with open("templates/checkout.html", "r") as f:
-        print("File:", f.read())
-
-    print("CWD:", getcwd())
-
-    return render_template("checkout.html", name=None)
+    return redirect("https://securegw-stage.paytm.in/order/process"), response
 
 
 @app.route("/status", methods=["POST"])
