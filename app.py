@@ -1,5 +1,6 @@
 import json
 import os
+from os import getcwd
 import smtplib
 from datetime import datetime
 from email.message import EmailMessage
@@ -20,9 +21,12 @@ CORS(app)
 def test_server():
     return "I Am Working!!!"
 
+
 @app.route("/payment", methods=["GET", "POST"])
 def payment_init():
     args = request.form
+
+    print(args)
 
     # params = dict()
 
@@ -36,7 +40,7 @@ def payment_init():
     #     "disablePaymentMode": [{"mode": "EMI", "channels": ["EMI"]}],
     #     "userInfo": {"custId": f"{args['email']}",},
     # }
-    
+
     # signature = generateSignature(
     #     json.dumps(params["body"]), "lFJs&StYc8SxR1pj"
     # )
@@ -51,7 +55,7 @@ def payment_init():
     # response = requests.post(
     #     url, data=json.dumps(params), headers={"Content-type": "application/json"}
     # ).json()
-    
+
     # response["signature"] = signature
 
     # return response
@@ -72,7 +76,7 @@ def payment_init():
     signature = generateSignature(
         json.dumps(checksumParams["body"]), "lFJs&StYc8SxR1pj"
     )
-    
+
     params = dict()
 
     params["MID"] = "MoShyC80984595390154"
@@ -97,10 +101,18 @@ def payment_init():
         "<input type='hidden' name='CHECKSUMHASH' value='" + signature + "' >"
     )
 
-    with open("template/checkout.html", "w")as f:
-        f.write("""<html><head><title>Merchant Checkout Page</title></head><body><center><h1>Please do not refresh this page...</h1></center><form method="post" action="'https://securegw-stage.paytm.in/order/process'" name="f1">'{form_fields}'</form><script type="text/javascript">document.f1.submit()</script></body></html>"""),
+    with open("template/checkout.html", "w") as f:
+        f.write(
+            """<html><head><title>Merchant Checkout Page</title></head><body><center><h1>Please do not refresh this page...</h1></center><form method="post" action="'https://securegw-stage.paytm.in/order/process'" name="f1">'{form_fields}'</form><script type="text/javascript">document.f1.submit()</script></body></html>"""
+        ),
 
-    return render_template("checkout.html")
+    with open("template/checkout.html", "r") as f:
+        print(f.read())
+
+    print(getcwd())
+
+    return render_template("checkout.html", name=None)
+
 
 @app.route("/status", methods=["POST"])
 def payment_status():
