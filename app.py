@@ -20,38 +20,85 @@ CORS(app)
 def test_server():
     return "I Am Working!!!"
 
-
-@app.route("/payment", methods=["POST"])
+@app.route("/payment")
 def payment_init():
     args = request.get_json()
 
-    orderId = f"ORDER_{args['phone']}{datetime.timestamp(datetime.now())}"
+    # orderId = f"ORDER_{args['phone']}{datetime.timestamp(datetime.now())}"
 
-    params = dict()
+    # params = dict()
 
-    params["body"] = {
+    # params["body"] = {
+    #     "requestType": "Payment",
+    #     "mid": "MoShyC80984595390154",
+    #     "websiteName": "WEBSTAGING",
+    #     "orderId": orderId,
+    #     "callbackUrl": f"https://securegw-stage.paytm.in/theia/paytmCallback?ORDER_ID={orderId}",
+    #     "txnAmount": {"value": f"{args['value']}", "currency": "INR",},
+    #     "disablePaymentMode": [{"mode": "EMI", "channels": ["EMI"]}],
+    #     "userInfo": {"custId": f"{args['cust']}",},
+    # }
+
+    # params["head"] = {"signature": signature}
+
+    # if args["staging"] == "true":
+    #     url = f"https://securegw-stage.paytm.in/theia/api/v1/initiateTransaction?mid=MoShyC80984595390154&orderId={orderId}"
+    # else:
+    #     url = f"https://securegw.paytm.in/theia/api/v1/initiateTransaction?mid=MoShyC80984595390154&orderId={orderId}"
+
+    # response = requests.post(
+    #     url, data=json.dumps(params), headers={"Content-type": "application/json"}
+    # ).json()
+    # response["orderId"] = orderId
+
+    # return response
+
+    checksumParams = dict()
+
+    checksumParams["body"] = {
         "requestType": "Payment",
         "mid": "MoShyC80984595390154",
         "websiteName": "WEBSTAGING",
-        "orderId": orderId,
-        "callbackUrl": f"https://securegw-stage.paytm.in/theia/paytmCallback?ORDER_ID={orderId}",
+        "orderId": args["orderId"],
+        "callbackUrl": f"https://securegw-stage.paytm.in/theia/paytmCallback?ORDER_ID={args['orderId']}",
         "txnAmount": {"value": f"{args['value']}", "currency": "INR",},
         "disablePaymentMode": [{"mode": "EMI", "channels": ["EMI"]}],
-        "userInfo": {"custId": f"{args['cust']}",},
+        "userInfo": {"custId": f"{args['email']}",},
     }
 
-    signature = generateSignature(json.dumps(params["body"]), "lFJs&StYc8SxR1pj")
-    params["head"] = {"signature": signature}
+    signature = generateSignature(
+        json.dumps(checksumParams["body"]), "lFJs&StYc8SxR1pj"
+    )
+    
+    params = dict()
 
-    if args["staging"] == "true":
-        url = f"https://securegw-stage.paytm.in/theia/api/v1/initiateTransaction?mid=MoShyC80984595390154&orderId={orderId}"
-    else:
-        url = f"https://securegw.paytm.in/theia/api/v1/initiateTransaction?mid=MoShyC80984595390154&orderId={orderId}"
+    params["MID"] = "MoShyC80984595390154"
+    params["WEBSITE"] = "WEBSTAGING"
+    params["CHANNEL_ID"] = "WEB"
+    params["INDUSTRY_TYPE_ID"] = "Retail"
+    params["ORDER_ID"] = args["orderId"]
+    params["TXN_AMOUNT"] = args["value"]
+    params[
+        "CALLBACK_URL"
+    ] = f"https://securegw-stage.paytm.in/theia/paytmCallback?ORDER_ID={args['orderId']}"
+    params["EMAIL"] = args["email"]
 
-    response = requests.post(
-        url, data=json.dumps(params), headers={"Content-type": "application/json"}
-    ).json()
-    response["orderId"] = orderId
+    form_fields = ""
+
+    for parm in params:
+        form_fields += (
+            "<input type='hidden' name='" + parm + "' value='" + params[parm] + "' >"
+        )
+
+    form_fields += (
+        "<input type='hidden' name='CHECKSUMHASH' value='" + signature + "' >"
+    )
+
+    response = {
+        "status": 200,
+        "headers": {"Content-Type": "text/html"},
+        "body": f"""<html><head><title>Merchant Checkout Page</title></head><body><center><h1>Please do not refresh this page...</h1></center><form method="post" action="'https://securegw-stage.paytm.in/order/process'" name="f1">'{form_fields}'</form><script type="text/javascript">document.f1.submit()</script></body></html>""",
+    }
 
     return response
 
@@ -96,62 +143,62 @@ def send_product_mail():
             <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
             <style>
                 body {{
-                background-color: #F0F0F0;
-                font-family: sans-serif;
+                background-color: #F0F0F0
+                font-family: sans-serif
                 }}
                 #card {{
-                background-color: white;
-                padding: 4px 32px 32px 32px;
-                margin-top: 12px;
+                background-color: white
+                padding: 4px 32px 32px 32px
+                margin-top: 12px
                 }}
                 .lefty {{
-                text-align: left;
+                text-align: left
                 }}
                 .righty {{
-                text-align: right;
+                text-align: right
                 }}
                 .center {{
-                display: block;
-                margin-left: auto;
-                margin-right: auto;
+                display: block
+                margin-left: auto
+                margin-right: auto
                 }}
                 table.product td, table.product th {{
-                padding-right: 10px;
-                padding-left: 10px;
-                padding-top: 6px;
-                padding-bottom: 6px;
+                padding-right: 10px
+                padding-left: 10px
+                padding-top: 6px
+                padding-bottom: 6px
                 }}
                 table.product th {{
-                border-bottom: 1px solid black;
+                border-bottom: 1px solid black
                 }}
                 table {{
-                width: 100%;
-                border-collapse: collapse;
+                width: 100%
+                border-collapse: collapse
                 }}
                 table.product {{
-                margin-top: 18px;
+                margin-top: 18px
                 }}
                 .fa {{
-                padding: 16px;
-                    font-size: 16px;
-                    width: 16px;
-                    text-align: center;
-                    text-decoration: none;
-                    margin: 5px 2px;
-                    border-radius: 50%;
+                padding: 16px
+                    font-size: 16px
+                    width: 16px
+                    text-align: center
+                    text-decoration: none
+                    margin: 5px 2px
+                    border-radius: 50%
                 }}
                 .fa-facebook {{
-                margin-top: 12px;
-                    background: #666;
-                    color: white;
+                margin-top: 12px
+                    background: #666
+                    color: white
                 }}
             </style>
         </head>
         <body>
         <img src="https://firebasestorage.googleapis.com/v0/b/suneelprinters37.appspot.com/o/Logo.png?alt=media&token=21acff59-dc39-411b-a881-f4dac1da5173", class="center" width="12%">
         <div id="card">
-        <p style = 'font-size:12px; text-align : left;'>Hey {args['name']} <br> Greetings from Suneel Printers! <br><br> This is to confirm your order with Sunil Printers. </p>
-            <p style="font-size: 24px; font-weight: bold; text-align: center;">ORDER DETAILS</p>
+        <p style = 'font-size:12px text-align : left'>Hey {args['name']} <br> Greetings from Suneel Printers! <br><br> This is to confirm your order with Sunil Printers. </p>
+            <p style="font-size: 24px font-weight: bold text-align: center">ORDER DETAILS</p>
             <table>
                 <tr>
                     <th class="lefty">Customer Name:</th>
@@ -178,12 +225,12 @@ def send_product_mail():
                 </tr>
                     {args['product_list']}
                 <tr>
-                <th colspan="2" style="border-top: 1px solid black; text-align: left;">TOTAL:</th>
+                <th colspan="2" style="border-top: 1px solid black text-align: left">TOTAL:</th>
                 <th style="border-top: 1px solid black" class="righty">{args['price']}</th>
                 </tr>
             </table>
-                <p style = 'font-size:12px; text-align : center;'>Your order will be delivered soon. </p>
-                        <p style = 'font-size:18px; text-align : center;'> Thanks for Shopping with us!</p>
+                <p style = 'font-size:12px text-align : center'>Your order will be delivered soon. </p>
+                        <p style = 'font-size:18px text-align : center'> Thanks for Shopping with us!</p>
         </div>
         <a href="http://www.facebook.com/" target="_blank">
                 <img src="https://simplesharebuttons.com/images/somacro/facebook.png" alt="Facebook" width="5%" class="center" />
@@ -219,62 +266,62 @@ def send_order_mail():
             <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
             <style>
                 body {{
-                background-color: #F0F0F0;
-                font-family: sans-serif;
+                background-color: #F0F0F0
+                font-family: sans-serif
                 }}
                 #card {{
-                background-color: white;
-                padding: 4px 32px 32px 32px;
-                margin-top: 12px;
+                background-color: white
+                padding: 4px 32px 32px 32px
+                margin-top: 12px
                 }}
                 .lefty {{
-                text-align: left;
+                text-align: left
                 }}
                 .righty {{
-                text-align: right;
+                text-align: right
                 }}
                 .center {{
-                display: block;
-                margin-left: auto;
-                margin-right: auto;
+                display: block
+                margin-left: auto
+                margin-right: auto
                 }}
                 table.product td, table.product th {{
-                padding-right: 10px;
-                padding-left: 10px;
-                padding-top: 6px;
-                padding-bottom: 6px;
+                padding-right: 10px
+                padding-left: 10px
+                padding-top: 6px
+                padding-bottom: 6px
                 }}
                 table.product th {{
-                border-bottom: 1px solid black;
+                border-bottom: 1px solid black
                 }}
                 table {{
-                width: 100%;
-                border-collapse: collapse;
+                width: 100%
+                border-collapse: collapse
                 }}
                 table.product {{
-                margin-top: 18px;
+                margin-top: 18px
                 }}
                 .fa {{
-                padding: 16px;
-                    font-size: 16px;
-                    width: 16px;
-                    text-align: center;
-                    text-decoration: none;
-                    margin: 5px 2px;
-                    border-radius: 50%;
+                padding: 16px
+                    font-size: 16px
+                    width: 16px
+                    text-align: center
+                    text-decoration: none
+                    margin: 5px 2px
+                    border-radius: 50%
                 }}
                 .fa-facebook {{
-                margin-top: 12px;
-                    background: #666;
-                    color: white;
+                margin-top: 12px
+                    background: #666
+                    color: white
                 }}
             </style>
         </head>
         <body>
         <img src="https://firebasestorage.googleapis.com/v0/b/suneelprinters37.appspot.com/o/Logo.png?alt=media&token=21acff59-dc39-411b-a881-f4dac1da5173", class="center" width="12%">
         <div id="card">
-        <p style = 'font-size:12px; text-align : left;'>Hey {args['name']} <br> Greetings from Suneel Printers! <br><br> This is to confirm your order with Sunil Printers. </p>
-            <p style="font-size: 24px; font-weight: bold; text-align: center;">ORDER DETAILS</p>
+        <p style = 'font-size:12px text-align : left'>Hey {args['name']} <br> Greetings from Suneel Printers! <br><br> This is to confirm your order with Sunil Printers. </p>
+            <p style="font-size: 24px font-weight: bold text-align: center">ORDER DETAILS</p>
             <table>
                 <tr>
                     <th class="lefty">Customer Name:</th>
@@ -285,10 +332,10 @@ def send_order_mail():
                     <td class="righty">{args['phone']}</td>
                 </tr>
             </table>
-            <p style = font-size:18px; font-weight:bold;>ORDERS:</p>
+            <p style = font-size:18px font-weight:bold>ORDERS:</p>
             <ul><li>{args['order_list']}</li></ul>
-                <p style = 'font-size:12px; text-align : center;'>You will soon recieve a call from us</p>
-                        <p style = 'font-size:18px; text-align : center;'> Thanks for Shopping with us!</p>
+                <p style = 'font-size:12px text-align : center'>You will soon recieve a call from us</p>
+                        <p style = 'font-size:18px text-align : center'> Thanks for Shopping with us!</p>
         </div>
         <a href="http://www.facebook.com/" target="_blank">
                 <img src="https://simplesharebuttons.com/images/somacro/facebook.png" alt="Facebook" width="5%" class="center" />
@@ -306,4 +353,5 @@ def send_order_mail():
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
+    # app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
+    app.run(debug=True)
