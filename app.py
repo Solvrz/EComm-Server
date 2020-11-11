@@ -109,10 +109,8 @@ def payment_init():
                 </center>
                 <form method="post" action='https://securegw-stage.paytm.in/order/process' name="f">
                     <input type='hidden' name='MID' value='MoShyC80984595390154' >
-                    <input type='hidden' name='WEBSITE' value='WEBSTAGING' >
-                    <input type='hidden' name='ORDER_ID' value='{args["orderId"]}' >
-                    <input type='hidden' name='EMAIL' value='{args["email"]}' >
-                    <input type='hidden' name='TXNAMOUNT' value='{args["value"]}' >
+                    <input type='hidden' name='ORDERID' value='{args["orderId"]}' >
+                    <input type='hidden' name='TXN_AMOUNT' value='{args["value"]}' >
                     <input type='hidden' name='CALLBACK_URL' value='https://suneel-printers.herokuapp.com/callback' >
                     <input type='hidden' name='CHECKSUMHASH' value='{signature}' >
                 </form>
