@@ -22,11 +22,9 @@ def test_server():
     return "I Am Working!!!"
 
 
-@app.route("/payment", methods=["GET", "POST"])
+@app.route("/payment")
 def payment_init():
-    args = request.form
-
-    print(args["orderId"])
+    args = request.args
 
     # params = dict()
 
@@ -59,7 +57,6 @@ def payment_init():
     # response["signature"] = signature
 
     # return response
-
     checksumParams = dict()
 
     checksumParams["body"] = {
