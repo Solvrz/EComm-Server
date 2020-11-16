@@ -84,7 +84,8 @@ def send_product_mail():
 
     FCMNotification(
         api_key="AAAAZSeYoWE:APA91bEowBkZ0QHPPZnG_GkMWWGToAAnRV1qL5Rv2Yn5iaiIMcJ90Wex5TcIoV_Fd98MS_qGpS7jfmbLKtRoTq08pE4QhKd-RDcehpDTcuWICQh-akydH40UjTdOcavQrcP_1RxqVH0w"
-    ).notify_single_device(
+    ).notify_topic_subscribers(
+        topic_name="orders",
         message_title="New Order",
         message_body=f"A New Order Has Been Placed by {args['name']}. Please Check The Orders Section Of The Admin App.",
     )
@@ -214,7 +215,8 @@ def send_order_mail():
 
     FCMNotification(
         api_key="AAAAZSeYoWE:APA91bEowBkZ0QHPPZnG_GkMWWGToAAnRV1qL5Rv2Yn5iaiIMcJ90Wex5TcIoV_Fd98MS_qGpS7jfmbLKtRoTq08pE4QhKd-RDcehpDTcuWICQh-akydH40UjTdOcavQrcP_1RxqVH0w"
-    ).notify_single_device(
+    ).notify_topic_subscribers(
+        topic_name="orders",
         message_title="New Order",
         message_body=f"A New Order Has Been Placed by {args['name']}. Please Check The Orders Section Of The Admin App.",
     )
