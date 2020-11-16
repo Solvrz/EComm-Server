@@ -8,6 +8,7 @@ from email.mime.text import MIMEText
 import requests
 from flask import Flask, request
 from flask_cors import CORS
+from pyfcm import FCMNotification
 
 from checksum import generateSignature
 
@@ -80,6 +81,13 @@ def payment_status():
 @app.route("/order_request", methods=["POST"])
 def send_product_mail():
     args = request.get_json()
+
+    FCMNotification(
+        api_key="AAAAZSeYoWE:APA91bEowBkZ0QHPPZnG_GkMWWGToAAnRV1qL5Rv2Yn5iaiIMcJ90Wex5TcIoV_Fd98MS_qGpS7jfmbLKtRoTq08pE4QhKd-RDcehpDTcuWICQh-akydH40UjTdOcavQrcP_1RxqVH0w"
+    ).notify_single_device(
+        message_title="New Order",
+        message_body=f"A New Order Has Been Placed by {args['name']}. Please Check The Orders Section Of The Admin App.",
+    )
 
     message = EmailMessage()
 
@@ -203,6 +211,13 @@ def send_product_mail():
 @app.route("/on_order", methods=["POST"])
 def send_order_mail():
     args = request.get_json()
+
+    FCMNotification(
+        api_key="AAAAZSeYoWE:APA91bEowBkZ0QHPPZnG_GkMWWGToAAnRV1qL5Rv2Yn5iaiIMcJ90Wex5TcIoV_Fd98MS_qGpS7jfmbLKtRoTq08pE4QhKd-RDcehpDTcuWICQh-akydH40UjTdOcavQrcP_1RxqVH0w"
+    ).notify_single_device(
+        message_title="New Order",
+        message_body=f"A New Order Has Been Placed by {args['name']}. Please Check The Orders Section Of The Admin App.",
+    )
 
     message = EmailMessage()
 
