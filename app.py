@@ -86,8 +86,8 @@ def send_product_mail():
         api_key="AAAAZSeYoWE:APA91bEowBkZ0QHPPZnG_GkMWWGToAAnRV1qL5Rv2Yn5iaiIMcJ90Wex5TcIoV_Fd98MS_qGpS7jfmbLKtRoTq08pE4QhKd-RDcehpDTcuWICQh-akydH40UjTdOcavQrcP_1RxqVH0w"
     ).notify_topic_subscribers(
         topic_name="orders",
-        message_title="New Order",
-        message_body=f"A New Order Has Been Placed by {args['name']}. Please Check The Orders Section Of The Admin App.",
+        message_title="New Order has been Placed",
+        message_body="An Order has been Placed, Please check the Orders Section of the app for more details of the order",
     )
 
     message = EmailMessage()
@@ -104,62 +104,62 @@ def send_product_mail():
             <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
             <style>
                 body {{
-                background-color: #F0F0F0
-                font-family: sans-serif
+                background-color: #F0F0F0;
+                font-family: sans-serif;
                 }}
                 #card {{
-                background-color: white
-                padding: 4px 32px 32px 32px
-                margin-top: 12px
+                background-color: white;
+                padding: 4px 32px 32px 32px;
+                margin-top: 12px;
                 }}
                 .lefty {{
-                text-align: left
+                text-align: left;
                 }}
                 .righty {{
-                text-align: right
+                text-align: right;
                 }}
                 .center {{
-                display: block
-                margin-left: auto
-                margin-right: auto
+                display: block;
+                margin-left: auto;
+                margin-right: auto;
                 }}
                 table.product td, table.product th {{
-                padding-right: 10px
-                padding-left: 10px
-                padding-top: 6px
-                padding-bottom: 6px
+                padding-right: 10px;
+                padding-left: 10px;
+                padding-top: 6px;
+                padding-bottom: 6px;
                 }}
                 table.product th {{
-                border-bottom: 1px solid black
+                border-bottom: 1px solid black;
                 }}
                 table {{
-                width: 100%
-                border-collapse: collapse
+                width: 100%;
+                border-collapse: collapse;
                 }}
                 table.product {{
-                margin-top: 18px
+                margin-top: 18px;
                 }}
                 .fa {{
-                padding: 16px
-                    font-size: 16px
-                    width: 16px
-                    text-align: center
-                    text-decoration: none
-                    margin: 5px 2px
-                    border-radius: 50%
+                padding: 16px;
+                    font-size: 16px;
+                    width: 16px;
+                    text-align: center;
+                    text-decoration: none;
+                    margin: 5px 2px;
+                    border-radius: 50%;
                 }}
                 .fa-facebook {{
-                margin-top: 12px
-                    background: #666
-                    color: white
+                margin-top: 12px;
+                    background: #666;
+                    color: white;
                 }}
             </style>
         </head>
         <body>
         <img src="https://firebasestorage.googleapis.com/v0/b/suneelprinters37.appspot.com/o/Logo.png?alt=media&token=21acff59-dc39-411b-a881-f4dac1da5173", class="center" width="12%">
         <div id="card">
-        <p style = 'font-size:12px text-align : left'>Hey {args['name']} <br> Greetings from Suneel Printers! <br><br> This is to confirm your order with Sunil Printers. </p>
-            <p style="font-size: 24px font-weight: bold text-align: center">ORDER DETAILS</p>
+        <p style = 'font-size:12px; text-align : left;'>Hey {args['name']} <br> Greetings from Suneel Printers! <br><br> This is to confirm your order with Sunil Printers. </p>
+            <p style="font-size: 24px; font-weight: bold; text-align: center;">ORDER DETAILS</p>
             <table>
                 <tr>
                     <th class="lefty">Customer Name:</th>
@@ -186,12 +186,12 @@ def send_product_mail():
                 </tr>
                     {args['product_list']}
                 <tr>
-                <th colspan="2" style="border-top: 1px solid black text-align: left">TOTAL:</th>
+                <th colspan="2" style="border-top: 1px solid black; text-align: left;">TOTAL:</th>
                 <th style="border-top: 1px solid black" class="righty">{args['price']}</th>
                 </tr>
             </table>
-                <p style = 'font-size:12px text-align : center'>Your order will be delivered soon. </p>
-                        <p style = 'font-size:18px text-align : center'> Thanks for Shopping with us!</p>
+                <p style = 'font-size:12px; text-align : center;'>Your order will be delivered soon. </p>
+                        <p style = 'font-size:18px; text-align : center;'> Thanks for Shopping with us!</p>
         </div>
         <a href="http://www.facebook.com/" target="_blank">
                 <img src="https://simplesharebuttons.com/images/somacro/facebook.png" alt="Facebook" width="5%" class="center" />
@@ -217,8 +217,8 @@ def send_order_mail():
         api_key="AAAAZSeYoWE:APA91bEowBkZ0QHPPZnG_GkMWWGToAAnRV1qL5Rv2Yn5iaiIMcJ90Wex5TcIoV_Fd98MS_qGpS7jfmbLKtRoTq08pE4QhKd-RDcehpDTcuWICQh-akydH40UjTdOcavQrcP_1RxqVH0w"
     ).notify_topic_subscribers(
         topic_name="orders",
-        message_title="New Order",
-        message_body=f"A New Order Has Been Placed by {args['name']}. Please Check The Orders Section Of The Admin App.",
+        message_title="New Order has been Placed",
+        message_body="An Order has been Placed, Please check the Orders Section of the app for more details of the order",
     )
 
     message = EmailMessage()
@@ -235,62 +235,62 @@ def send_order_mail():
             <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
             <style>
                 body {{
-                background-color: #F0F0F0
-                font-family: sans-serif
+                background-color: #F0F0F0;
+                font-family: sans-serif;
                 }}
                 #card {{
-                background-color: white
-                padding: 4px 32px 32px 32px
-                margin-top: 12px
+                background-color: white;
+                padding: 4px 32px 32px 32px;
+                margin-top: 12px;
                 }}
                 .lefty {{
-                text-align: left
+                text-align: left;
                 }}
                 .righty {{
-                text-align: right
+                text-align: right;
                 }}
                 .center {{
-                display: block
-                margin-left: auto
-                margin-right: auto
+                display: block;
+                margin-left: auto;
+                margin-right: auto;
                 }}
                 table.product td, table.product th {{
-                padding-right: 10px
-                padding-left: 10px
-                padding-top: 6px
-                padding-bottom: 6px
+                padding-right: 10px;
+                padding-left: 10px;
+                padding-top: 6px;
+                padding-bottom: 6px;
                 }}
                 table.product th {{
-                border-bottom: 1px solid black
+                border-bottom: 1px solid black;
                 }}
                 table {{
-                width: 100%
-                border-collapse: collapse
+                width: 100%;
+                border-collapse: collapse;
                 }}
                 table.product {{
-                margin-top: 18px
+                margin-top: 18px;
                 }}
                 .fa {{
-                padding: 16px
-                    font-size: 16px
-                    width: 16px
-                    text-align: center
-                    text-decoration: none
-                    margin: 5px 2px
-                    border-radius: 50%
+                padding: 16px;
+                    font-size: 16px;
+                    width: 16px;
+                    text-align: center;
+                    text-decoration: none;
+                    margin: 5px 2px;
+                    border-radius: 50%;
                 }}
                 .fa-facebook {{
-                margin-top: 12px
-                    background: #666
-                    color: white
+                margin-top: 12px;
+                    background: #666;
+                    color: white;
                 }}
             </style>
         </head>
         <body>
         <img src="https://firebasestorage.googleapis.com/v0/b/suneelprinters37.appspot.com/o/Logo.png?alt=media&token=21acff59-dc39-411b-a881-f4dac1da5173", class="center" width="12%">
         <div id="card">
-        <p style = 'font-size:12px text-align : left'>Hey {args['name']} <br> Greetings from Suneel Printers! <br><br> This is to confirm your order with Sunil Printers. </p>
-            <p style="font-size: 24px font-weight: bold text-align: center">ORDER DETAILS</p>
+        <p style = 'font-size:12px; text-align : left;'>Hey {args['name']} <br> Greetings from Suneel Printers! <br><br> This is to confirm your order with Sunil Printers. </p>
+            <p style="font-size: 24px; font-weight: bold; text-align: center;">ORDER DETAILS</p>
             <table>
                 <tr>
                     <th class="lefty">Customer Name:</th>
@@ -301,10 +301,10 @@ def send_order_mail():
                     <td class="righty">{args['phone']}</td>
                 </tr>
             </table>
-            <p style = font-size:18px font-weight:bold>ORDERS:</p>
+            <p style = font-size:18px; font-weight:bold;>ORDERS:</p>
             <ul><li>{args['order_list']}</li></ul>
-                <p style = 'font-size:12px text-align : center'>You will soon recieve a call from us</p>
-                        <p style = 'font-size:18px text-align : center'> Thanks for Shopping with us!</p>
+                <p style = 'font-size:12px; text-align : center;'>You will soon recieve a call from us</p>
+                        <p style = 'font-size:18px; text-align : center;'> Thanks for Shopping with us!</p>
         </div>
         <a href="http://www.facebook.com/" target="_blank">
                 <img src="https://simplesharebuttons.com/images/somacro/facebook.png" alt="Facebook" width="5%" class="center" />
