@@ -20,6 +20,16 @@ CORS(app)
 def test_server():
     return "I Am Working!!!"
 
+@app.route("/notif")
+def test_notif():
+    FCMNotification(
+        api_key="AAAAZSeYoWE:APA91bEowBkZ0QHPPZnG_GkMWWGToAAnRV1qL5Rv2Yn5iaiIMcJ90Wex5TcIoV_Fd98MS_qGpS7jfmbLKtRoTq08pE4QhKd-RDcehpDTcuWICQh-akydH40UjTdOcavQrcP_1RxqVH0w"
+    ).notify_topic_subscribers(
+        topic_name="orders",
+        message_title="New Order has been Placed",
+        message_body="An Order has been Placed, Please check the Orders Section of the app for more details of the order",
+    )
+
 
 @app.route("/payment")
 def payment_init():
