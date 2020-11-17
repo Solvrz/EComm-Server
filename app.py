@@ -2,39 +2,24 @@ import json
 import os
 import smtplib
 from email.message import EmailMessage
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
 
 import requests
 from flask import Flask, request
 from flask_cors import CORS
 from pyfcm import FCMNotification
 
-from checksum import generateSignature
+from .checksum import generateSignature
 
 app = Flask(__name__)
 CORS(app)
 
 
 @app.route("/")
-def test_server():
-    return "I Am Working!!!"
+def running_check():
+    return "The Server is running"
 
 
-@app.route("/notif")
-def test_notif():
-    FCMNotification(
-        api_key="AAAAZSeYoWE:APA91bEowBkZ0QHPPZnG_GkMWWGToAAnRV1qL5Rv2Yn5iaiIMcJ90Wex5TcIoV_Fd98MS_qGpS7jfmbLKtRoTq08pE4QhKd-RDcehpDTcuWICQh-akydH40UjTdOcavQrcP_1RxqVH0w"
-    ).notify_topic_subscribers(
-        topic_name="orders",
-        message_title="New Order has been Placed",
-        message_body="An Order has been Placed, Please check the Orders Section of the app for more details of the order",
-    )
-
-    return "Sent"
-
-
-@app.route("/payment")
+@app.route("/payment_init")
 def payment_init():
     args = request.args
 
@@ -69,7 +54,7 @@ def payment_init():
     return response
 
 
-@app.route("/status", methods=["POST"])
+@app.route("/payment_status", methods=["POST"])
 def payment_status():
     args = request.get_json()
 
@@ -91,7 +76,7 @@ def payment_status():
     return response
 
 
-@app.route("/order_request", methods=["POST"])
+@app.route("/order", methods=["POST"])
 def send_product_mail():
     args = request.get_json()
 
@@ -222,7 +207,7 @@ def send_product_mail():
     return "Successful"
 
 
-@app.route("/on_order", methods=["POST"])
+@app.route("/request", methods=["POST"])
 def send_order_mail():
     args = request.get_json()
 
