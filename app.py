@@ -20,6 +20,7 @@ CORS(app)
 def test_server():
     return "I Am Working!!!"
 
+
 @app.route("/notif")
 def test_notif():
     FCMNotification(
@@ -29,6 +30,8 @@ def test_notif():
         message_title="New Order has been Placed",
         message_body="An Order has been Placed, Please check the Orders Section of the app for more details of the order",
     )
+
+    return "Sent"
 
 
 @app.route("/payment")
