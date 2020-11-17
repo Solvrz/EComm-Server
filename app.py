@@ -8,7 +8,7 @@ from flask import Flask, request
 from flask_cors import CORS
 from pyfcm import FCMNotification
 
-from .checksum import generateSignature
+from checksum import generateSignature
 
 app = Flask(__name__)
 CORS(app)
