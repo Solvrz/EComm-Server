@@ -7,8 +7,7 @@ import requests
 from flask import Flask, request
 from flask_cors import CORS
 from pyfcm import FCMNotification
-
-from checksum import generateSignature
+from razorpay import client
 
 app = Flask(__name__)
 CORS(app)
@@ -23,57 +22,38 @@ def running_check():
 def payment_init():
     args = request.args
 
-    params = dict()
+    order_amount = args["amount"]
+    order_currency = "INR"
+    order_receipt = args["order_id"]
+    notes = {"Email": args["email"]}
 
-    params["body"] = {
-        "requestType": "Payment",
-        "mid": "MoShyC80984595390154",
-        "websiteName": "WEBSTAGING",
-        "orderId": args["orderId"],
-        "callbackUrl": f"https://securegw-stage.paytm.in/theia/paytmCallback?ORDER_ID={args['orderId']}",
-        "txnAmount": {"value": f"{args['value']}", "currency": "INR",},
-        "disablePaymentMode": [{"mode": "EMI", "channels": ["EMI"]}],
-        "userInfo": {"custId": f"{args['email']}",},
-    }
-
-    signature = generateSignature(json.dumps(params["body"]), "lFJs&StYc8SxR1pj")
-
-    params["head"] = {"signature": signature}
-
-    if args["staging"] == "true":
-        url = f"https://securegw-stage.paytm.in/theia/api/v1/initiateTransaction?mid=MoShyC80984595390154&orderId={args['orderId']}"
-    else:
-        url = f"https://securegw.paytm.in/theia/api/v1/initiateTransaction?mid=MoShyC80984595390154&orderId={args['orderId']}"
-
-    response = requests.post(
-        url, data=json.dumps(params), headers={"Content-type": "application/json"}
-    ).json()
-
-    response["signature"] = signature
+    response = client.order.create(
+        amount=order_amount, currency=order_currency, receipt=order_receipt, notes=notes
+    )
 
     return response
 
 
-@app.route("/payment_status", methods=["POST"])
-def payment_status():
-    args = request.get_json()
+# @app.route("/payment_status", methods=["POST"])
+# def payment_status():
+#     args = request.get_json()
 
-    params = dict()
-    params["body"] = {"mid": "MoShyC80984595390154", "orderId": args["orderId"]}
+#     params = dict()
+#     params["body"] = {"mid": "MoShyC80984595390154", "orderId": args["orderId"]}
 
-    signature = generateSignature(json.dumps(params["body"]), "lFJs&StYc8SxR1pj")
-    params["head"] = {"signature": signature}
+#     signature = generateSignature(json.dumps(params["body"]), "lFJs&StYc8SxR1pj")
+#     params["head"] = {"signature": signature}
 
-    if args["staging"] == "true":
-        url = "https://securegw-stage.paytm.in/v3/order/status"
-    else:
-        url = "https://securegw.paytm.in/v3/order/status"
+#     if args["staging"] == "true":
+#         url = "https://securegw-stage.paytm.in/v3/order/status"
+#     else:
+#         url = "https://securegw.paytm.in/v3/order/status"
 
-    response = requests.post(
-        url, data=json.dumps(params), headers={"Content-type": "application/json"}
-    ).json()
+#     response = requests.post(
+#         url, data=json.dumps(params), headers={"Content-type": "application/json"}
+#     ).json()
 
-    return response
+#     return response
 
 
 @app.route("/order", methods=["POST"])
