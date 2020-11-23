@@ -20,7 +20,7 @@ def running_check():
 
 @app.route("/payment_init")
 def payment_init():
-    args = request.get_json()
+    args = request.args
     
     print(args)
 
