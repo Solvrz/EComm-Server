@@ -41,22 +41,16 @@ def payment_create_order():
 def payment_verify():
     args = request.get_json()
 
-    signature = (
-        hmac.new(
-            bytes("p9idhjrcBmr2FFvthVa56HeI", "latin-1"),
-            msg=bytes((args["order_id"] + "|" + args["payment_id"]), "latin-1"),
-            digestmod=hashlib.sha256,
-        )
-        .hexdigest()
-        .upper()
-    )
-
-    print(signature)
+    signature = hmac.new(
+        bytes("p9idhjrcBmr2FFvthVa56HeI", "latin-1"),
+        msg=bytes((args["order_id"] + "|" + args["payment_id"]), "latin-1"),
+        digestmod=hashlib.sha256,
+    ).hexdigest()
 
     if signature == args["signature"]:
-        return jsonify({"sucessful": "true"})
+        return jsonify({"sucessful": True})
     else:
-        return jsonify({"sucessful": "false"})
+        return jsonify({"sucessful": False})
 
 
 @app.route("/order", methods=["POST"])
