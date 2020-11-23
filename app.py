@@ -37,26 +37,21 @@ def payment_create_order():
     return response
 
 
-# @app.route("/payment_status", methods=["POST"])
-# def payment_status():
-#     args = request.get_json()
+@app.route("/payment_verify", methods=["POST"])
+def payment_verify():
+    args = request.get_json()
 
-#     params = dict()
-#     params["body"] = {"mid": "MoShyC80984595390154", "orderId": args["orderId"]}
+    response = client.utility.verify_payment_signature(
+        {
+            "order_id": args["order_id"],
+            "razorpay_payment_id": args["payment_id"],
+            "razorpay_signature": args["signature"],
+        }
+    )
 
-#     signature = generateSignature(json.dumps(params["body"]), "lFJs&StYc8SxR1pj")
-#     params["head"] = {"signature": signature}
+    print(response)
 
-#     if args["staging"] == "true":
-#         url = "https://securegw-stage.paytm.in/v3/order/status"
-#     else:
-#         url = "https://securegw.paytm.in/v3/order/status"
-
-#     response = requests.post(
-#         url, data=json.dumps(params), headers={"Content-type": "application/json"}
-#     ).json()
-
-#     return response
+    return response
 
 
 @app.route("/order", methods=["POST"])
