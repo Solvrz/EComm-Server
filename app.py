@@ -9,7 +9,15 @@ from flask import Flask, jsonify, request
 from flask_cors import CORS
 from pyfcm import FCMNotification
 
-client = razorpay.Client(auth=("rzp_test_3XFNUiX9RPskxm", "p9idhjrcBmr2FFvthVa56HeI"))
+testing = True
+
+if testing:
+    client = razorpay.Client(
+        auth=("rzp_test_3XFNUiX9RPskxm", "p9idhjrcBmr2FFvthVa56HeI")
+    )
+else:
+    client = razorpay.Client(auth=("", ""))  # TODO: Put Merchant Key & ID
+
 client.set_app_details({"title": "Suneel Printers", "version": "1.0.0+1"})
 
 app = Flask(__name__)
@@ -41,11 +49,18 @@ def payment_create_order():
 def payment_verify():
     args = request.get_json()
 
-    signature = hmac.new(
-        bytes("p9idhjrcBmr2FFvthVa56HeI", "latin-1"),
-        msg=bytes((args["order_id"] + "|" + args["payment_id"]), "latin-1"),
-        digestmod=hashlib.sha256,
-    ).hexdigest()
+    if testing:
+        signature = hmac.new(
+            bytes("p9idhjrcBmr2FFvthVa56HeI", "latin-1"),
+            msg=bytes((args["order_id"] + "|" + args["payment_id"]), "latin-1"),
+            digestmod=hashlib.sha256,
+        ).hexdigest()
+    else:
+        signature = signature = hmac.new(
+            bytes("", "latin-1"),  # TODO: Put Merchant ID
+            msg=bytes((args["order_id"] + "|" + args["payment_id"]), "latin-1"),
+            digestmod=hashlib.sha256,
+        ).hexdigest()
 
     if signature == args["signature"]:
         return jsonify({"sucessful": True})
