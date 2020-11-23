@@ -45,7 +45,7 @@ def payment_verify():
         hmac.new(
             bytes("p9idhjrcBmr2FFvthVa56HeI", "latin-1"),
             msg=bytes((args["order_id"] + "|" + args["payment_id"]), "latin-1"),
-            digestmod=hashlib.sha256(),
+            digestmod=hashlib.sha256,
         )
         .hexdigest()
         .upper()
