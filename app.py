@@ -22,7 +22,7 @@ def running_check():
 def payment_init():
     args = request.args
     
-    print(args)
+    print(args["amount"], args["order_id"])
 
     order_amount = args["amount"]
     order_currency = "INR"
