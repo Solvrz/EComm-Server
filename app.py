@@ -21,24 +21,18 @@ def running_check():
     return "The Server is running"
 
 
-@app.route("/payment_init")
-def payment_init():
-    args = request.args
+@app.route("/payment_create_order")
+def payment_create_order():
+    args = request.get_json()
 
     response = client.order.create(
         data={
-            "amount": int(args["amount"]),
+            "amount": args["amount"],
             "currency": "INR",
             "receipt": args["order_id"],
             "payment_capture": 1,
         }
     )
-
-    # response = client.order.create(
-    #     amount=order_amount, currency=order_currency, receipt=order_receipt, notes=notes
-    # )
-
-    print("Response", response)
 
     return response
 
