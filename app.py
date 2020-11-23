@@ -18,7 +18,7 @@ def running_check():
     return "The Server is running"
 
 
-@app.route("/payment_init")
+@app.route("/payment_init", methods=["POST"])
 def payment_init():
     args = request.args
     
