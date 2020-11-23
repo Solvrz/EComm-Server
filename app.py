@@ -63,6 +63,8 @@ def payment_verify():
         ).hexdigest()
 
     if signature == args["signature"]:
+        order = client.order.fetch(args["order_id"])
+        print(order)
         return jsonify({"sucessful": True})
     else:
         return jsonify({"sucessful": False})
