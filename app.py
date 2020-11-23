@@ -18,9 +18,9 @@ def running_check():
     return "The Server is running"
 
 
-@app.route("/payment_init", methods=["POST"])
+@app.route("/payment_init")
 def payment_init():
-    args = request.args
+    args = request.get_json()
     
     print(args["amount"], args["order_id"])
 
