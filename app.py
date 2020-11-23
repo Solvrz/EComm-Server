@@ -48,6 +48,8 @@ def payment_create_order():
 @app.route("/payment_verify", methods=["POST"])
 def payment_verify():
     args = request.get_json()
+    
+    razorpay.Order
 
     if testing:
         signature = hmac.new(
@@ -57,14 +59,12 @@ def payment_verify():
         ).hexdigest()
     else:
         signature = signature = hmac.new(
-            bytes("", "latin-1"),  # TODO: Put Merchant ID
+            bytes("", "latin-1"), # TODO: Put Merchant ID
             msg=bytes((args["order_id"] + "|" + args["payment_id"]), "latin-1"),
             digestmod=hashlib.sha256,
         ).hexdigest()
 
     if signature == args["signature"]:
-        order = client.order.fetch(args["order_id"])
-        print(order)
         return jsonify({"sucessful": True})
     else:
         return jsonify({"sucessful": False})
