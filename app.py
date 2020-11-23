@@ -21,15 +21,21 @@ def running_check():
 @app.route("/payment_init")
 def payment_init():
     args = request.args
+    
+    print(args)
 
     order_amount = args["amount"]
     order_currency = "INR"
     order_receipt = args["order_id"]
     notes = {"Email": args["email"]}
+    
+    print("Data Assigned")
 
     response = client.order.create(
         amount=order_amount, currency=order_currency, receipt=order_receipt, notes=notes
     )
+    
+    print("Response", response)
 
     return response
 
