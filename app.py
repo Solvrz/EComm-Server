@@ -7,7 +7,11 @@ import requests
 from flask import Flask, request
 from flask_cors import CORS
 from pyfcm import FCMNotification
-from razorpay import client
+import razorpay
+
+client = razorpay.Client(auth=("rzp_test_3XFNUiX9RPskxm", "p9idhjrcBmr2FFvthVa56HeI"))
+client.set_app_details({"title": "Suneel Printers", "version": "1.0.0+1"})
+
 
 app = Flask(__name__)
 CORS(app)
@@ -21,20 +25,20 @@ def running_check():
 @app.route("/payment_init")
 def payment_init():
     args = request.args
-    
-    print(args)
 
-    order_amount = args["amount"]
-    order_currency = "INR"
-    order_receipt = args["order_id"]
-    notes = {"Email": args["email"]}
-    
-    print("Data Assigned")
-
-    response = client.order.create(
-        amount=order_amount, currency=order_currency, receipt=order_receipt, notes=notes
+    response = razorpay.Order.create(
+        data={
+            "amount": args["amount"],
+            "currency": "INR",
+            "receipt": args["order_id"],
+            "payment_capture": 1,
+        }
     )
-    
+
+    # response = client.order.create(
+    #     amount=order_amount, currency=order_currency, receipt=order_receipt, notes=notes
+    # )
+
     print("Response", response)
 
     return response
