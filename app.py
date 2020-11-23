@@ -1,11 +1,11 @@
-import json
+import hashlib
+import hmac
 import os
 import smtplib
 from email.message import EmailMessage
 
 import razorpay
-import requests
-from flask import Flask, request
+from flask import Flask, jsonify, request
 from flask_cors import CORS
 from pyfcm import FCMNotification
 
@@ -41,17 +41,22 @@ def payment_create_order():
 def payment_verify():
     args = request.get_json()
 
-    response = client.utility.verify_payment_signature(
-        {
-            "razorpay_order_id": args["order_id"],
-            "razorpay_payment_id": args["payment_id"],
-            "razorpay_signature": args["signature"],
-        }
+    signature = (
+        hmac.new(
+            bytes("p9idhjrcBmr2FFvthVa56HeI", "latin-1"),
+            msg=bytes((args["order_id"] + "|" + args["payment_id"]), "latin-1"),
+            digestmod=hashlib.sha256,
+        )
+        .hexdigest()
+        .upper()
     )
 
-    print(response)
+    print(signature)
 
-    return response
+    if signature == args["signature"]:
+        return jsonify({"sucessful": "true"})
+    else:
+        return jsonify({"sucessful": "false"})
 
 
 @app.route("/order", methods=["POST"])
