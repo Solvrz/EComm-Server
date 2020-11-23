@@ -12,6 +12,7 @@ import razorpay
 client = razorpay.Client(auth=("rzp_test_3XFNUiX9RPskxm", "p9idhjrcBmr2FFvthVa56HeI"))
 client.set_app_details({"title": "Suneel Printers", "version": "1.0.0+1"})
 
+order = razorpay.Order()
 
 app = Flask(__name__)
 CORS(app)
@@ -26,7 +27,7 @@ def running_check():
 def payment_init():
     args = request.args
 
-    response = razorpay.Order.create(
+    response = order.create(
         data={
             "amount": args["amount"],
             "currency": "INR",
