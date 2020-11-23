@@ -3,11 +3,11 @@ import os
 import smtplib
 from email.message import EmailMessage
 
+import razorpay
 import requests
 from flask import Flask, request
 from flask_cors import CORS
 from pyfcm import FCMNotification
-import razorpay
 
 client = razorpay.Client(auth=("rzp_test_3XFNUiX9RPskxm", "p9idhjrcBmr2FFvthVa56HeI"))
 client.set_app_details({"title": "Suneel Printers", "version": "1.0.0+1"})
@@ -21,7 +21,7 @@ def running_check():
     return "The Server is running"
 
 
-@app.route("/payment_create_order")
+@app.route("/payment_create_order", methods=["POST"])
 def payment_create_order():
     args = request.get_json()
 
