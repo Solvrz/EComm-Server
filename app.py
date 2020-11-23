@@ -27,7 +27,7 @@ def payment_init():
 
     response = client.order.create(
         data={
-            "amount": args["amount"],
+            "amount": int(args["amount"]),
             "currency": "INR",
             "receipt": args["order_id"],
             "payment_capture": 1,
