@@ -22,7 +22,7 @@ def running_check():
 def payment_init():
     args = request.get_json()
     
-    print(args["amount"], args["order_id"])
+    print(args)
 
     order_amount = args["amount"]
     order_currency = "INR"
