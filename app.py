@@ -14,6 +14,7 @@ testing = True
 if testing:
     creds = {"key": "rzp_test_3XFNUiX9RPskxm", "id": "p9idhjrcBmr2FFvthVa56HeI"}
 else:
+    # TODO: Put Merchant Key & ID Here
     creds = {"key": "", "id": ""}
 
 
