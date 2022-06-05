@@ -9,17 +9,22 @@ from flask import Flask, jsonify, request
 from flask_cors import CORS
 from pyfcm import FCMNotification
 
+# TODO: Fix Mail && Remove SP Metions
+
 testing = True
 
+# TODO: Add Razorpay Key & IDs Here
 if testing:
-    creds = {"key": "rzp_test_3XFNUiX9RPskxm", "id": "p9idhjrcBmr2FFvthVa56HeI"}
+    creds = {"key": "", "id": ""}
 else:
-    # TODO: Put Merchant Key & ID Here
     creds = {"key": "", "id": ""}
 
-
 client = razorpay.Client(auth=(creds["key"], creds["id"]))
-client.set_app_details({"title": "Suneel Printers", "version": "1.0.0+1"})
+client.set_app_details({"title": "E-Commerce", "version": "1.0.0+1"})
+
+# TODO: Change this email & pass
+order_email = "orders.ecommerce@gmail.com"
+order_email_pass = ""  # TODO: Genrate this pass from Gmail App Passsword
 
 app = Flask(__name__)
 CORS(app)
@@ -83,7 +88,7 @@ mail_structure = f"""
         </style>
     </head>
 <body>
-<img src="https://firebasestorage.googleapis.com/v0/b/suneelprinters37.appspot.com/o/Logo.png?alt=media&token=21acff59-dc39-411b-a881-f4dac1da5173", class="center" width="12%">
+<img src="https://firebasestorage.googleapis.com/v0/b/e-commerce37.appspot.com/o/Logo.png?alt=media&token=21acff59-dc39-411b-a881-f4dac1da5173", class="center" width="12%">
 <div id="card">"""
 
 
@@ -102,8 +107,7 @@ def payment_init():
             "currency": "INR",
             "receipt": args["order_id"],
             "payment_capture": 1,
-        }
-    )
+        })
 
     return response
 
@@ -129,22 +133,24 @@ def send_order():
     args = request.get_json()
 
     FCMNotification(
-        api_key="AAAAZSeYoWE:APA91bEowBkZ0QHPPZnG_GkMWWGToAAnRV1qL5Rv2Yn5iaiIMcJ90Wex5TcIoV_Fd98MS_qGpS7jfmbLKtRoTq08pE4QhKd-RDcehpDTcuWICQh-akydH40UjTdOcavQrcP_1RxqVH0w"
+        api_key=
+        "AAAAZSeYoWE:APA91bEowBkZ0QHPPZnG_GkMWWGToAAnRV1qL5Rv2Yn5iaiIMcJ90Wex5TcIoV_Fd98MS_qGpS7jfmbLKtRoTq08pE4QhKd-RDcehpDTcuWICQh-akydH40UjTdOcavQrcP_1RxqVH0w"
     ).notify_topic_subscribers(
         topic_name="orders",
         message_title="New Order has been Placed",
-        message_body="An Order has been Placed, Please check the Orders Section of the app for more details of the order",
+        message_body=
+        "An Order has been Placed, Please check the Orders Section of the app for more details of the order",
     )
 
     message = EmailMessage()
 
-    message["From"] = "orders.suneelprinters@gmail.com"
-    message["Bcc"] = ["orders.suneelprinters@gmail.com", f"{args['email']}"]
+    message["From"] = order_email
+    message["Bcc"] = [order_email, f"{args['email']}"]
     message["Subject"] = f"Order Placed by {args['name']}"
 
     message.add_header("Content-Type", "text/html")
     message.set_payload(
-        f"""{mail_structure}<p style = 'font-size:12px; text-align : left;'>Hey {args['name']} <br> Greetings from Suneel Printers! <br><br> This is to confirm your order with Sunil Printers. </p>
+        f"""{mail_structure}<p style = 'font-size:12px; text-align : left;'>Hey {args['name']} <br> Greetings from E-Commerce! <br><br> This is to confirm your order with Sunil Printers. </p>
             <p style="font-size: 24px; font-weight: bold; text-align: center;">ORDER DETAILS</p>
 
             <table>
@@ -184,16 +190,13 @@ def send_order():
 
             </div>
 
-            <a href="https://www.facebook.com/pages/category/Business-Service/Suneel-printers-1602910586637429/" target="_blank">
-            <img src="https://simplesharebuttons.com/images/somacro/facebook.png" alt="Facebook" width="5%" class="center" />
             </a>
             </body>
-        </html>"""
-    )
+        </html>""")
 
     mail_server = smtplib.SMTP_SSL("smtp.gmail.com")
 
-    mail_server.login("orders.suneelprinters@gmail.com", "SuneelPrinters37")
+    mail_server.login(order_email, order_email_pass)
     mail_server.send_message(message)
     mail_server.quit()
 
@@ -205,22 +208,24 @@ def send_request():
     args = request.get_json()
 
     FCMNotification(
-        api_key="AAAAZSeYoWE:APA91bEowBkZ0QHPPZnG_GkMWWGToAAnRV1qL5Rv2Yn5iaiIMcJ90Wex5TcIoV_Fd98MS_qGpS7jfmbLKtRoTq08pE4QhKd-RDcehpDTcuWICQh-akydH40UjTdOcavQrcP_1RxqVH0w"
+        api_key=
+        "AAAAZSeYoWE:APA91bEowBkZ0QHPPZnG_GkMWWGToAAnRV1qL5Rv2Yn5iaiIMcJ90Wex5TcIoV_Fd98MS_qGpS7jfmbLKtRoTq08pE4QhKd-RDcehpDTcuWICQh-akydH40UjTdOcavQrcP_1RxqVH0w"
     ).notify_topic_subscribers(
         topic_name="orders",
         message_title="New Order has been Placed",
-        message_body="An Order has been Placed, Please check the Orders Section of the app for more details of the order",
+        message_body=
+        "An Order has been Placed, Please check the Orders Section of the app for more details of the order",
     )
 
     message = EmailMessage()
 
-    message["From"] = "orders.suneelprinters@gmail.com"
-    message["Bcc"] = ["orders.suneelprinters@gmail.com", f"{args['email']}"]
+    message["From"] = order_email
+    message["Bcc"] = [order_email, f"{args['email']}"]
     message["Subject"] = f"Order Placed by {args['name']}"
 
     message.add_header("Content-Type", "text/html")
     message.set_payload(
-        f"""{mail_structure}<p style = 'font-size:12px; text-align : left;'>Hey {args['name']} <br> Greetings from Suneel Printers! <br><br> This is to confirm your order with Sunil Printers. </p>
+        f"""{mail_structure}<p style = 'font-size:12px; text-align : left;'>Hey {args['name']} <br> Greetings from E-Commerce! <br><br> This is to confirm your order with Sunil Printers. </p>
             <p style="font-size: 24px; font-weight: bold; text-align: center;">ORDER DETAILS</p>
 
             <table>
@@ -241,21 +246,21 @@ def send_request():
             <p style = 'font-size:18px; text-align : center;'> Thanks for Shopping with us!</p>
             
             </div>
-
-            <a href="https://www.facebook.com/pages/category/Business-Service/Suneel-printers-1602910586637429/" target="_blank">
-            <img src="https://simplesharebuttons.com/images/somacro/facebook.png" alt="Facebook" width="5%" class="center" />
             </a>
-            </body>
-        </html>"""
-    )
+            </body>Printers
+        </html>""")
 
-    mail_server = smtplib.SMTP_SSL("smtp.gmail.com")
+    mail_server = smtplib.SMTP_SSL("smtp.gmail.com", 587)
 
-    mail_server.login("orders.suneelprinters@gmail.com", "SuneelPrinters37")
+    mail_server.login(order_email, "nduidwrfcnvztwpp")
     mail_server.send_message(message)
     mail_server.quit()
     return "Successful"
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
+    app.run(
+        debug=True,
+        host="192.168.100.45",
+        port=int(os.environ.get("PORT", 5050)),
+    )

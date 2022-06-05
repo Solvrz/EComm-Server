@@ -1,2 +1,2 @@
-# SuneelPrinters-Server
-- Server for SUneelPrinters.
+# E-Commerce-Server
+- Server for E-Commerce.
