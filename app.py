@@ -23,9 +23,11 @@ with open("firebase.json") as f:
 
     if data["private_key_id"] == "":
         data["private_key_id"] = os.environ.get("ECOMM_FIREBASE_ID")
-        data["private_key"] = os.environ.get("ECOMM_FIREBASE_KEY").replace(r"\n", "\n")
+        data["private_key"] = os.environ.get("ECOMM_FIREBASE_KEY1").replace(
+            r"\n", "\n"
+        ) + os.environ.get("ECOMM_FIREBASE_KEY2").replace(r"\n", "\n")
 
-        initialize_app(credentials.Certificate(data))
+    initialize_app(credentials.Certificate(data))
 
 
 creds = yaml.safe_load(open("creds.yaml"))
@@ -110,16 +112,6 @@ mail_structure = f"""
 
 @app.route("/")
 def running_check():
-    messaging.send(
-        messaging.Message(
-            notification=messaging.Notification(
-                title="New Order has been Placed",
-                body="An Order has been Placed, Please check the Orders Section of the app for more details of the order",
-            ),
-            topic="orders",
-        )
-    )
-
     return "The Server is running"
 
 
@@ -159,11 +151,6 @@ def payment_verify():
 @app.route("/order", methods=["POST"])
 def send_order():
     args = request.args
-
-    try:
-        initialize_app(credentials.Certificate(data))
-    except:
-        get_app()
 
     messaging.send(
         messaging.Message(
