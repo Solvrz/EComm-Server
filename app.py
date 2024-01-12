@@ -1,33 +1,36 @@
 import hashlib
 import hmac
-import os
 import smtplib
 from email.message import EmailMessage
 
 import razorpay
+import yaml
+from firebase_admin import credentials, get_app, initialize_app, messaging
 from flask import Flask, jsonify, request
 from flask_cors import CORS
-from pyfcm import FCMNotification
 
-# TODO: Fix Mail && Remove SP Metions
+# TODO: Update These
+name = "EComm"
+logo = "https://firebasestorage.googleapis.com/v0/b/ecomm37.appspot.com/o/Logo.png?alt=media&token=21acff59-dc39-411b-a881-f4dac1da5173"
 
 testing = True
 
-# TODO: Add Razorpay Key & IDs Here
+creds = yaml.safe_load(open("creds.yaml"))
+
+smtp_email = creds["email"]
+smtp_pass = creds["pass"]
+
 if testing:
-    creds = {"key": "", "id": ""}
+    razorpay_creds = creds["razorpay_test"]
 else:
-    creds = {"key": "", "id": ""}
+    razorpay_creds = creds["razorpay_prod"]
 
-client = razorpay.Client(auth=(creds["key"], creds["id"]))
-client.set_app_details({"title": "E-Commerce", "version": "1.0.0+1"})
-
-# TODO: Change this email & pass
-order_email = "orders.ecommerce@gmail.com"
-order_email_pass = ""  # TODO: Genrate this pass from Gmail App Passsword
+client = razorpay.Client(auth=(razorpay_creds["key"], razorpay_creds["id"]))
+client.set_app_details({"title": name, "version": "1.0.0+1"})
 
 app = Flask(__name__)
 CORS(app)
+
 
 mail_structure = f"""
 <!DOCTYPE html>
@@ -88,7 +91,7 @@ mail_structure = f"""
         </style>
     </head>
 <body>
-<img src="https://firebasestorage.googleapis.com/v0/b/e-commerce37.appspot.com/o/Logo.png?alt=media&token=21acff59-dc39-411b-a881-f4dac1da5173", class="center" width="12%">
+<img src="{logo}", class="center" width="12%">
 <div id="card">"""
 
 
@@ -99,15 +102,17 @@ def running_check():
 
 @app.route("/payment_init", methods=["POST"])
 def payment_init():
-    args = request.get_json()
+    args = request.args
 
     response = client.order.create(
         data={
-            "amount": args["amount"],
+            # TODO: Change This
             "currency": "INR",
-            "receipt": args["order_id"],
+            "amount": args.get("amount"),
+            "receipt": args.get("order_id"),
             "payment_capture": 1,
-        })
+        }
+    )
 
     return response
 
@@ -117,7 +122,7 @@ def payment_verify():
     args = request.get_json()
 
     signature = hmac.new(
-        bytes(creds["id"], "latin-1"),
+        bytes(razorpay_creds["id"], "latin-1"),
         msg=bytes((args["order_id"] + "|" + args["payment_id"]), "latin-1"),
         digestmod=hashlib.sha256,
     ).hexdigest()
@@ -130,45 +135,49 @@ def payment_verify():
 
 @app.route("/order", methods=["POST"])
 def send_order():
-    args = request.get_json()
+    args = request.args
+    try:
+        initialize_app(credentials.Certificate("firebase.json"))
+    except:
+        get_app()
 
-    FCMNotification(
-        api_key=
-        "AAAAZSeYoWE:APA91bEowBkZ0QHPPZnG_GkMWWGToAAnRV1qL5Rv2Yn5iaiIMcJ90Wex5TcIoV_Fd98MS_qGpS7jfmbLKtRoTq08pE4QhKd-RDcehpDTcuWICQh-akydH40UjTdOcavQrcP_1RxqVH0w"
-    ).notify_topic_subscribers(
-        topic_name="orders",
-        message_title="New Order has been Placed",
-        message_body=
-        "An Order has been Placed, Please check the Orders Section of the app for more details of the order",
+    messaging.send(
+        messaging.Message(
+            notification=messaging.Notification(
+                title="New Order has been Placed",
+                body="An Order has been Placed, Please check the Orders Section of the app for more details of the order",
+            ),
+            topic="orders",
+        )
     )
 
     message = EmailMessage()
 
-    message["From"] = order_email
-    message["Bcc"] = [order_email, f"{args['email']}"]
-    message["Subject"] = f"Order Placed by {args['name']}"
+    message["From"] = smtp_email
+    message["Bcc"] = [smtp_email, f"{args.get('email')}"]
+    message["Subject"] = f"Order Placed by {args.get('email')}"
 
     message.add_header("Content-Type", "text/html")
     message.set_payload(
-        f"""{mail_structure}<p style = 'font-size:12px; text-align : left;'>Hey {args['name']} <br> Greetings from E-Commerce! <br><br> This is to confirm your order with Sunil Printers. </p>
+        f"""{mail_structure}<p style = 'font-size:12px; text-align : left;'>Hey {args.get('name')} <br> Greetings from {name}! <br><br> This is to confirm your order with {name}. </p>
             <p style="font-size: 24px; font-weight: bold; text-align: center;">ORDER DETAILS</p>
 
             <table>
                 <tr>
                     <th class="lefty">Customer Name:</th>
-                    <td class="righty">{args['name']}</td>
+                    <td class="righty">{args.get('name')}</td>
                 </tr>
                 <tr>
                     <th class="lefty">Phone Number:</th>
-                    <td class="righty">{args['phone']}</td>
+                    <td class="righty">{args.get('phone')}</td>
                 </tr>
                 <tr>
                     <th class="lefty">Payment Mode:</th>
-                    <td class="righty">{args['payment_mode']}</td>
+                    <td class="righty">{args.get('payment_mode')}</td>
                 </tr>
                 <tr>
                     <th class="lefty">Shipping Address:</th>
-                    <td class="righty" width="50%">{args['address']}</td>
+                    <td class="righty" width="50%">{args.get('address')}</td>
                 </tr>
             </table>
 
@@ -178,10 +187,10 @@ def send_order():
                     <th class="righty">QUANTITY</th>
                     <th class="righty" width="40%">PRICE</th>
                 </tr>
-                    {args['product_list']}
+                    {args.get('product_list')}
                 <tr>
                 <th colspan="2" style="border-top: 1px solid black; text-align: left;">TOTAL:</th>
-                <th style="border-top: 1px solid black" class="righty">{args['price']}</th>
+                <th style="border-top: 1px solid black" class="righty">{args.get('price')}</th>
                 </tr>
             </table>
 
@@ -192,11 +201,12 @@ def send_order():
 
             </a>
             </body>
-        </html>""")
+        </html>"""
+    )
 
     mail_server = smtplib.SMTP_SSL("smtp.gmail.com")
 
-    mail_server.login(order_email, order_email_pass)
+    mail_server.login(smtp_email, smtp_pass)
     mail_server.send_message(message)
     mail_server.quit()
 
@@ -205,62 +215,65 @@ def send_order():
 
 @app.route("/request", methods=["POST"])
 def send_request():
-    args = request.get_json()
+    args = request.args
 
-    FCMNotification(
-        api_key=
-        "AAAAZSeYoWE:APA91bEowBkZ0QHPPZnG_GkMWWGToAAnRV1qL5Rv2Yn5iaiIMcJ90Wex5TcIoV_Fd98MS_qGpS7jfmbLKtRoTq08pE4QhKd-RDcehpDTcuWICQh-akydH40UjTdOcavQrcP_1RxqVH0w"
-    ).notify_topic_subscribers(
-        topic_name="orders",
-        message_title="New Order has been Placed",
-        message_body=
-        "An Order has been Placed, Please check the Orders Section of the app for more details of the order",
+    initialize_app(credentials.Certificate("firebase.json"))
+    messaging.send(
+        messaging.Message(
+            notification=messaging.Notification(
+                title="New Order has been Placed",
+                body="An Order has been Placed, Please check the Orders Section of the app for more details of the order",
+            ),
+            topic="orders",
+        )
     )
 
     message = EmailMessage()
 
-    message["From"] = order_email
-    message["Bcc"] = [order_email, f"{args['email']}"]
-    message["Subject"] = f"Order Placed by {args['name']}"
+    message["From"] = smtp_email
+    message["Bcc"] = [smtp_email, f"{args.get('email')}"]
+    message["Subject"] = f"Order Placed by {args.get('name')}"
 
     message.add_header("Content-Type", "text/html")
     message.set_payload(
-        f"""{mail_structure}<p style = 'font-size:12px; text-align : left;'>Hey {args['name']} <br> Greetings from E-Commerce! <br><br> This is to confirm your order with Sunil Printers. </p>
+        f"""{mail_structure}<p style = 'font-size:12px; text-align : left;'>Hey {args['name']} <br> Greetings from {name}! <br><br> This is to confirm your order with {name}. </p>
             <p style="font-size: 24px; font-weight: bold; text-align: center;">ORDER DETAILS</p>
 
             <table>
                 <tr>
                     <th class="lefty">Customer Name:</th>
-                    <td class="righty">{args['name']}</td>
+                    <td class="righty">{args.get('name')}</td>
                 </tr>
                 <tr>
                     <th class="lefty">Phone Number:</th>
-                    <td class="righty">{args['phone']}</td>
+                    <td class="righty">{args.get('phone')}</td>
                 </tr>
             </table>
 
             <p style = font-size:18px; font-weight:bold;>ORDERS:</p>
-            <ul><li>{args['order_list']}</li></ul>
-            
+            <ul><li>{args.get('order_list')}</li></ul>
+
             <p style = 'font-size:12px; text-align : center;'>You will soon recieve a call from us</p>
             <p style = 'font-size:18px; text-align : center;'> Thanks for Shopping with us!</p>
-            
+
             </div>
             </a>
-            </body>Printers
-        </html>""")
+            </body>
+        </html>"""
+    )
 
     mail_server = smtplib.SMTP_SSL("smtp.gmail.com", 587)
 
-    mail_server.login(order_email, "nduidwrfcnvztwpp")
+    mail_server.login(smtp_email, smtp_pass)
     mail_server.send_message(message)
     mail_server.quit()
+
     return "Successful"
 
 
 if __name__ == "__main__":
     app.run(
-        debug=True,
-        host="192.168.100.45",
-        port=int(os.environ.get("PORT", 5050)),
+        debug=testing,
+        # host="localhost",
+        # port=int(os.environ.get("PORT", 5050)),
     )

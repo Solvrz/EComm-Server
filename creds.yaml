@@ -1,0 +1,7 @@
+# TODO: Change These
+razorpay_test: { "key": "", "id": "" }
+razorpay_prod: { "key": "", "id": "" }
+# TODO: Change This
+email: "orders.ecomm@gmail.com"
+# TODO: Generate this pass from Gmail App Passsword
+pass: ""
