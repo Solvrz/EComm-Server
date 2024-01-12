@@ -1,19 +1,32 @@
 import hashlib
 import hmac
+import json
+import os
 import smtplib
 from email.message import EmailMessage
 
 import razorpay
 import yaml
-from firebase_admin import credentials, get_app, initialize_app, messaging
+from firebase_admin import credentials, initialize_app, messaging
 from flask import Flask, jsonify, request
 from flask_cors import CORS
+
+testing = False
 
 # TODO: Update These
 name = "EComm"
 logo = "https://firebasestorage.googleapis.com/v0/b/ecomm37.appspot.com/o/Logo.png?alt=media&token=21acff59-dc39-411b-a881-f4dac1da5173"
 
-testing = True
+
+with open("firebase.json") as f:
+    data = json.load(f)
+
+    if data["private_key_id"] == "":
+        data["private_key_id"] = os.environ.get("ECOMM_FIREBASE_ID")
+        data["private_key"] = os.environ.get("ECOMM_FIREBASE_KEY").replace(r"\n", "\n")
+
+        initialize_app(credentials.Certificate(data))
+
 
 creds = yaml.safe_load(open("creds.yaml"))
 
@@ -97,6 +110,16 @@ mail_structure = f"""
 
 @app.route("/")
 def running_check():
+    messaging.send(
+        messaging.Message(
+            notification=messaging.Notification(
+                title="New Order has been Placed",
+                body="An Order has been Placed, Please check the Orders Section of the app for more details of the order",
+            ),
+            topic="orders",
+        )
+    )
+
     return "The Server is running"
 
 
@@ -136,8 +159,9 @@ def payment_verify():
 @app.route("/order", methods=["POST"])
 def send_order():
     args = request.args
+
     try:
-        initialize_app(credentials.Certificate("firebase.json"))
+        initialize_app(credentials.Certificate(data))
     except:
         get_app()
 
@@ -217,7 +241,6 @@ def send_order():
 def send_request():
     args = request.args
 
-    initialize_app(credentials.Certificate("firebase.json"))
     messaging.send(
         messaging.Message(
             notification=messaging.Notification(
@@ -272,8 +295,4 @@ def send_request():
 
 
 if __name__ == "__main__":
-    app.run(
-        debug=testing,
-        # host="localhost",
-        # port=int(os.environ.get("PORT", 5050)),
-    )
+    app.run(debug=testing)
