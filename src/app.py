@@ -18,7 +18,7 @@ name = "EComm"
 logo = "https://firebasestorage.googleapis.com/v0/b/ecomm37.appspot.com/o/Logo.png?alt=media&token=21acff59-dc39-411b-a881-f4dac1da5173"
 
 
-with open("firebase.json") as f:
+with open("../firebase.json") as f:
     data = json.load(f)
 
     if data["private_key_id"] == "":
@@ -30,7 +30,7 @@ with open("firebase.json") as f:
     initialize_app(credentials.Certificate(data))
 
 
-creds = yaml.safe_load(open("creds.yaml"))
+creds = yaml.safe_load(open("../creds.yaml"))
 
 smtp_email = creds["email"]
 smtp_pass = creds["pass"]
@@ -216,63 +216,6 @@ def send_order():
     )
 
     mail_server = smtplib.SMTP_SSL("smtp.gmail.com")
-
-    mail_server.login(smtp_email, smtp_pass)
-    mail_server.send_message(message)
-    mail_server.quit()
-
-    return "Successful"
-
-
-@app.route("/request", methods=["POST"])
-def send_request():
-    args = request.args
-
-    messaging.send(
-        messaging.Message(
-            notification=messaging.Notification(
-                title="New Order has been Placed",
-                body="An Order has been Placed, Please check the Orders Section of the app for more details of the order",
-            ),
-            topic="orders",
-        )
-    )
-
-    message = EmailMessage()
-
-    message["From"] = smtp_email
-    message["Bcc"] = [smtp_email, f"{args.get('email')}"]
-    message["Subject"] = f"Order Placed by {args.get('name')}"
-
-    message.add_header("Content-Type", "text/html")
-    message.set_payload(
-        f"""{mail_structure}<p style = 'font-size:12px; text-align : left;'>Hey {args['name']} <br> Greetings from {name}! <br><br> This is to confirm your order with {name}. </p>
-            <p style="font-size: 24px; font-weight: bold; text-align: center;">ORDER DETAILS</p>
-
-            <table>
-                <tr>
-                    <th class="lefty">Customer Name:</th>
-                    <td class="righty">{args.get('name')}</td>
-                </tr>
-                <tr>
-                    <th class="lefty">Phone Number:</th>
-                    <td class="righty">{args.get('phone')}</td>
-                </tr>
-            </table>
-
-            <p style = font-size:18px; font-weight:bold;>ORDERS:</p>
-            <ul><li>{args.get('order_list')}</li></ul>
-
-            <p style = 'font-size:12px; text-align : center;'>You will soon recieve a call from us</p>
-            <p style = 'font-size:18px; text-align : center;'> Thanks for Shopping with us!</p>
-
-            </div>
-            </a>
-            </body>
-        </html>"""
-    )
-
-    mail_server = smtplib.SMTP_SSL("smtp.gmail.com", 587)
 
     mail_server.login(smtp_email, smtp_pass)
     mail_server.send_message(message)
