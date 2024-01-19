@@ -18,22 +18,34 @@ name = "EComm"
 logo = "https://firebasestorage.googleapis.com/v0/b/ecomm37.appspot.com/o/Logo.png?alt=media&token=21acff59-dc39-411b-a881-f4dac1da5173"
 
 
-with open("../firebase.json") as f:
-    data = json.load(f)
+if not os.path.exists("../firebase.json"):
+    data = {
+        "type": "service_account",
+        "project_id": "ecomm-37",
+        "private_key_id": "",
+        "private_key": "",
+        "client_email": "",
+        "client_id": "117210455226200101120",
+        "auth_uri": "",
+        "token_uri": "https://oauth2.googleapis.com/token",
+        "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+        "client_x509_cert_url": "",
+        "universe_domain": "googleapis.com",
+    }
 
-    if data["private_key_id"] == "":
-        data["private_key_id"] = os.environ.get("ECOMM_FIREBASE_ID")
-        data["client_email"] = os.environ.get("ECOMM_FIREBASE_EMAIL")
-        data[
-            "client_x509_cert_url"
-        ] = f"https://www.googleapis.com/robot/v1/metadata/x509/{os.environ.get("ECOMM_FIREBASE_EMAIL")}"
-        data["private_key"] = os.environ.get("ECOMM_FIREBASE_KEY1").replace(
-            r"\n", "\n"
-        ) + os.environ.get("ECOMM_FIREBASE_KEY2").replace(r"\n", "\n")
+    data["private_key_id"] = os.environ.get("ECOMM_FIREBASE_ID")
+    data["client_email"] = os.environ.get("ECOMM_FIREBASE_EMAIL")
+    data[
+        "client_x509_cert_url"
+    ] = f"https://www.googleapis.com/robot/v1/metadata/x509/{os.environ.get('ECOMM_FIREBASE_EMAIL')}"
+    data["private_key"] = os.environ.get("ECOMM_FIREBASE_KEY1").replace(
+        r"\n", "\n"
+    ) + os.environ.get("ECOMM_FIREBASE_KEY2").replace(r"\n", "\n")
+else:
+    with open("../firebase.json") as f:
+        data = json.load(f)
 
-    initialize_app(credentials.Certificate(data))
-
-
+initialize_app(credentials.Certificate(data))
 creds = yaml.safe_load(open("../creds.yaml"))
 
 smtp_email = creds["email"]
@@ -116,6 +128,16 @@ mail_structure = f"""
 
 @app.route("/")
 def running_check():
+    messaging.send(
+        messaging.Message(
+            notification=messaging.Notification(
+                title="New Order has been Placed",
+                body="An Order has been Placed, Please check the Orders Section of the app for more details of the order",
+            ),
+            topic="orders",
+        )
+    )
+
     return "The Server is running"
 
 
