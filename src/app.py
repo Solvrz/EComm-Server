@@ -23,6 +23,10 @@ with open("../firebase.json") as f:
 
     if data["private_key_id"] == "":
         data["private_key_id"] = os.environ.get("ECOMM_FIREBASE_ID")
+        data["client_email"] = os.environ.get("ECOMM_FIREBASE_EMAIL")
+        data[
+            "client_x509_cert_url"
+        ] = f"https://www.googleapis.com/robot/v1/metadata/x509/{os.environ.get("ECOMM_FIREBASE_EMAIL")}"
         data["private_key"] = os.environ.get("ECOMM_FIREBASE_KEY1").replace(
             r"\n", "\n"
         ) + os.environ.get("ECOMM_FIREBASE_KEY2").replace(r"\n", "\n")
