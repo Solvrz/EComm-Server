@@ -128,16 +128,6 @@ mail_structure = f"""
 
 @app.route("/")
 def running_check():
-    messaging.send(
-        messaging.Message(
-            notification=messaging.Notification(
-                title="New Order has been Placed",
-                body="An Order has been Placed, Please check the Orders Section of the app for more details of the order",
-            ),
-            topic="orders",
-        )
-    )
-
     return "The Server is running"
 
 
