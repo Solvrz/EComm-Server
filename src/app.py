@@ -12,13 +12,14 @@ from flask import Flask, jsonify, request
 from flask_cors import CORS
 
 testing = False
+path = "../" if testing else ""
 
 # TODO: Update These
 name = "EComm"
 logo = "https://firebasestorage.googleapis.com/v0/b/ecomm37.appspot.com/o/Logo.png?alt=media&token=21acff59-dc39-411b-a881-f4dac1da5173"
 
-
-if not os.path.exists("../firebase.json"):
+creds = yaml.safe_load(open(f"{path}creds.yaml"))
+if not os.path.exists(f"{path}firebase.json"):
     data = {
         "type": "service_account",
         "project_id": "ecomm-37",
@@ -33,20 +34,19 @@ if not os.path.exists("../firebase.json"):
         "universe_domain": "googleapis.com",
     }
 
-    data["private_key_id"] = os.environ.get("ECOMM_FIREBASE_ID")
-    data["client_email"] = os.environ.get("ECOMM_FIREBASE_EMAIL")
+    data["private_key_id"] = os.environ.get("ECOMM_FIREBASE_ID", "")
+    data["client_email"] = os.environ.get("ECOMM_FIREBASE_EMAIL", "")
     data[
         "client_x509_cert_url"
-    ] = f"https://www.googleapis.com/robot/v1/metadata/x509/{os.environ.get('ECOMM_FIREBASE_EMAIL')}"
-    data["private_key"] = os.environ.get("ECOMM_FIREBASE_KEY1").replace(
+    ] = f"https://www.googleapis.com/robot/v1/metadata/x509/{os.environ.get('ECOMM_FIREBASE_EMAIL', '')}"
+    data["private_key"] = os.environ.get("ECOMM_FIREBASE_KEY1", "").replace(
         r"\n", "\n"
-    ) + os.environ.get("ECOMM_FIREBASE_KEY2").replace(r"\n", "\n")
+    ) + os.environ.get("ECOMM_FIREBASE_KEY2", "").replace(r"\n", "\n")
 else:
-    with open("../firebase.json") as f:
+    with open(f"{path}firebase.json") as f:
         data = json.load(f)
 
 initialize_app(credentials.Certificate(data))
-creds = yaml.safe_load(open("../creds.yaml"))
 
 smtp_email = creds["email"]
 smtp_pass = creds["pass"]
